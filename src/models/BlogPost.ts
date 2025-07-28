@@ -76,7 +76,7 @@ const BlogPostSchema: Schema = new Schema({
 })
 
 // Create slug from title before saving
-BlogPostSchema.pre('save', function(next) {
+BlogPostSchema.pre('save', function(this: IBlogPost, next) {
   if (this.isModified('title') && !this.slug) {
     this.slug = this.title
       .toLowerCase()

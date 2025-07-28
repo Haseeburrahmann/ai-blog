@@ -21,7 +21,8 @@ export async function GET() {
         timestamp: new Date().toISOString()
       }
     })
-  } catch (error) {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  } catch (error: any) {
     console.error('Database connection error:', error)
     
     return NextResponse.json({

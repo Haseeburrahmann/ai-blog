@@ -199,7 +199,7 @@ const AIToolSchema: Schema = new Schema({
 })
 
 // Create slug from name before saving
-AIToolSchema.pre('save', function(next) {
+AIToolSchema.pre('save', function(this: IAITool, next) {
   if (this.isModified('name') && !this.slug) {
     this.slug = this.name
       .toLowerCase()

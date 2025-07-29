@@ -1,3 +1,5 @@
+import Link from "next/link";
+
 export default function Home() {
   return (
     <main className="min-h-screen bg-gray-50">
@@ -9,10 +11,10 @@ export default function Home() {
               <h1 className="text-2xl font-bold text-gray-900">AI Insights</h1>
             </div>
             <nav className="hidden md:flex space-x-8">
-              <a href="#" className="text-gray-500 hover:text-gray-900">Home</a>
-              <a href="#" className="text-gray-500 hover:text-gray-900">Blog</a>
-              <a href="#" className="text-gray-500 hover:text-gray-900">AI Tools</a>
-              <a href="#" className="text-gray-500 hover:text-gray-900">About</a>
+              <Link href="/" className="text-blue-600 font-medium">Home</Link>
+              <a href="/blog" className="text-gray-500 hover:text-gray-900">Blog</a>
+              <a href="/tools" className="text-gray-500 hover:text-gray-900">AI Tools</a>
+              <a href="#about" className="text-gray-500 hover:text-gray-900">About</a>
             </nav>
           </div>
         </div>
@@ -29,12 +31,18 @@ export default function Home() {
             and discover the best AI tools to boost your productivity.
           </p>
           <div className="flex justify-center space-x-4">
-            <button className="bg-blue-600 text-white px-6 py-3 rounded-lg hover:bg-blue-700 transition-colors">
+            <a 
+              href="/blog"
+              className="bg-blue-600 text-white px-6 py-3 rounded-lg hover:bg-blue-700 transition-colors"
+            >
               Read Latest Posts
-            </button>
-            <button className="border border-gray-300 text-gray-700 px-6 py-3 rounded-lg hover:bg-gray-50 transition-colors">
+            </a>
+            <a 
+              href="/tools"
+              className="border border-gray-300 text-gray-700 px-6 py-3 rounded-lg hover:bg-gray-50 transition-colors"
+            >
               Explore AI Tools
-            </button>
+            </a>
           </div>
         </div>
       </section>

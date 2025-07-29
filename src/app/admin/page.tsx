@@ -182,8 +182,8 @@ export default function AdminDashboard() {
                   </div>
                 </div>
                 <div className="ml-4">
-                  <p className="font-medium text-gray-900">Manage Content</p>
-                  <p className="text-sm text-gray-600">View all posts and tools</p>
+                  <p className="font-medium text-gray-900">Manage Posts</p>
+                  <p className="text-sm text-gray-600">View and edit all posts</p>
                 </div>
               </Link>
             </div>

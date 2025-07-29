@@ -2,7 +2,7 @@ import type { Metadata } from 'next'
 import { Inter } from 'next/font/google'
 import './globals.css'
 import { AuthProvider } from '@/contexts/AuthContext'
-import AdSenseHead from '@/components/AdSenseHead'
+import AdSenseConfig from '@/components/AdSenseConfig'
 
 const inter = Inter({ subsets: ['latin'] })
 
@@ -17,21 +17,21 @@ export default function RootLayout({
 }: {
   children: React.ReactNode
 }) {
-  const adsenseClientId = process.env.NEXT_PUBLIC_GOOGLE_ADSENSE_CLIENT_ID
+  const adsenseClientId = 'ca-pub-6867328086411956'
 
   return (
     <html lang="en">
       <head>
         {/* Google AdSense Account Verification */}
         <meta name="google-adsense-account" content="ca-pub-6867328086411956" />
-        
-        {/* AdSense Head Script */}
-        {adsenseClientId && <AdSenseHead clientId={adsenseClientId} />}
       </head>
       <body className={inter.className} suppressHydrationWarning={true}>
         <AuthProvider>
           {children}
         </AuthProvider>
+        
+        {/* AdSense Configuration */}
+        <AdSenseConfig publisherId={adsenseClientId} />
       </body>
     </html>
   )

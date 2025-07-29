@@ -1,9 +1,8 @@
-/* eslint-disable react/jsx-no-undef */
 'use client'
 
 import { useEffect, useState } from 'react'
 import Link from 'next/link'
-import AdSenseAd from '@/components/AdSenseAd'
+import SimpleAdSenseAd from '@/components/SimpleAdSenseConfig'
 
 interface BlogPost {
   _id: string
@@ -194,15 +193,12 @@ export default function Home() {
       <div className="bg-gray-100 py-4">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
           <div className="bg-white rounded-lg p-4 shadow-sm">
-            {/* AdSense Leaderboard Ad (728x90) will go here */}
-            <div className="h-24 bg-gray-200 rounded flex items-center justify-center text-gray-500 text-sm">
-            <AdSenseAd
-  adSlot="6551556707" // ← Your actual ad slot ID
-  className="mx-auto"
-  width={728}
-  height={90}
-/>
-            </div>
+            <SimpleAdSenseAd
+              width={728}
+              height={90}
+              format="auto"
+              className="mx-auto"
+            />
           </div>
         </div>
       </div>
@@ -228,61 +224,58 @@ export default function Home() {
             <>
               <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8 mb-12">
                 {latestPosts.map((post, index) => (
-                  <article
-                    key={post._id}
-                    className="bg-white rounded-xl shadow-lg overflow-hidden hover:shadow-xl transition-all duration-300 transform hover:scale-105 border border-gray-100"
-                  >
+                  <div key={post._id}>
                     {/* AdSense Medium Rectangle for every 3rd article */}
                     {index === 2 && (
-                      <div className="bg-gray-50 p-4 border-b">
-                        <div className="h-64 bg-gray-200 rounded flex items-center justify-center text-gray-500 text-sm">
-                        <AdSenseAd
-      adSlot="1885886529"
-      className="mx-auto"
-      width={300}
-    height={250}
-    />
-                        </div>
+                      <div className="bg-white rounded-lg shadow-sm p-6 mb-8">
+                        <SimpleAdSenseAd
+                          width={300}
+                          height={250}
+                          format="rectangle"
+                          className="mx-auto"
+                        />
                       </div>
                     )}
                     
-                    <div className="p-8">
-                      <div className="flex items-center justify-between mb-4">
-                        <span className={`inline-flex items-center px-3 py-1 rounded-full text-sm font-medium ${getCategoryColor(post.category)}`}>
-                          {post.category}
-                        </span>
-                        <span className="text-sm text-gray-500">{post.readTime} min read</span>
+                    <article className="bg-white rounded-xl shadow-lg overflow-hidden hover:shadow-xl transition-all duration-300 transform hover:scale-105 border border-gray-100">
+                      <div className="p-8">
+                        <div className="flex items-center justify-between mb-4">
+                          <span className={`inline-flex items-center px-3 py-1 rounded-full text-sm font-medium ${getCategoryColor(post.category)}`}>
+                            {post.category}
+                          </span>
+                          <span className="text-sm text-gray-500">{post.readTime} min read</span>
+                        </div>
+
+                        <h3 className="text-xl font-bold text-gray-900 mb-4 line-clamp-2 leading-tight">
+                          <Link 
+                            href={`/blog/${post.slug}`}
+                            className="hover:text-blue-600 transition-colors"
+                          >
+                            {post.title}
+                          </Link>
+                        </h3>
+
+                        <p className="text-gray-600 mb-6 line-clamp-3 leading-relaxed">
+                          {post.excerpt}
+                        </p>
+
+                        <div className="flex items-center justify-between pt-4 border-t border-gray-200">
+                          <span className="text-sm text-gray-500">
+                            {formatDate(post.publishedAt)}
+                          </span>
+                          <Link
+                            href={`/blog/${post.slug}`}
+                            className="text-blue-600 hover:text-blue-800 font-medium transition-colors inline-flex items-center"
+                          >
+                            Read More 
+                            <svg className="w-4 h-4 ml-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                            </svg>
+                          </Link>
+                        </div>
                       </div>
-
-                      <h3 className="text-xl font-bold text-gray-900 mb-4 line-clamp-2 leading-tight">
-                        <Link 
-                          href={`/blog/${post.slug}`}
-                          className="hover:text-blue-600 transition-colors"
-                        >
-                          {post.title}
-                        </Link>
-                      </h3>
-
-                      <p className="text-gray-600 mb-6 line-clamp-3 leading-relaxed">
-                        {post.excerpt}
-                      </p>
-
-                      <div className="flex items-center justify-between pt-4 border-t border-gray-200">
-                        <span className="text-sm text-gray-500">
-                          {formatDate(post.publishedAt)}
-                        </span>
-                        <Link
-                          href={`/blog/${post.slug}`}
-                          className="text-blue-600 hover:text-blue-800 font-medium transition-colors inline-flex items-center"
-                        >
-                          Read More 
-                          <svg className="w-4 h-4 ml-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
-                          </svg>
-                        </Link>
-                      </div>
-                    </div>
-                  </article>
+                    </article>
+                  </div>
                 ))}
               </div>
             </>
@@ -310,15 +303,12 @@ export default function Home() {
       <div className="bg-gray-100 py-8">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="bg-white rounded-lg p-6 shadow-sm text-center">
-            {/* AdSense Large Rectangle Ad (336x280) will go here */}
-            <div className="h-72 bg-gray-200 rounded flex items-center justify-center text-gray-500 text-sm mx-auto max-w-sm">
-            <AdSenseAd
-      adSlot="9756304549"
-      className="mx-auto"
-      width={300}
-    height={250}
-    />
-            </div>
+            <SimpleAdSenseAd
+              width={336}
+              height={280}
+              format="rectangle"
+              className="mx-auto"
+            />
           </div>
         </div>
       </div>
@@ -351,14 +341,12 @@ export default function Home() {
                     {/* AdSense Medium Rectangle for every 4th tool */}
                     {index === 3 && (
                       <div className="bg-gray-50 p-4 border-b">
-                        <div className="h-64 bg-gray-200 rounded flex items-center justify-center text-gray-500 text-sm">
-                        <AdSenseAd
-      adSlot="8068151493"
-      className="mx-auto"
-      width={300}
-    height={250}
-    />
-                        </div>
+                        <SimpleAdSenseAd
+                          width={300}
+                          height={250}
+                          format="rectangle"
+                          className="mx-auto"
+                        />
                       </div>
                     )}
                     

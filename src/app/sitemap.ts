@@ -4,7 +4,7 @@ import BlogPost from '@/models/BlogPost'
 import AITool from '@/models/AITool'
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
-  const baseUrl = 'https://aiinsights.com' // Replace with your actual domain
+  const baseUrl = 'https://mindfulblogai.com' // Replace with your actual domain
 
   // Static pages
   const staticPages = [

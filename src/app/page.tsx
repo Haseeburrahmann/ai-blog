@@ -1,7 +1,9 @@
+/* eslint-disable react/jsx-no-undef */
 'use client'
 
 import { useEffect, useState } from 'react'
 import Link from 'next/link'
+import AdSenseAd from '@/components/AdSenseAd'
 
 interface BlogPost {
   _id: string
@@ -194,7 +196,12 @@ export default function Home() {
           <div className="bg-white rounded-lg p-4 shadow-sm">
             {/* AdSense Leaderboard Ad (728x90) will go here */}
             <div className="h-24 bg-gray-200 rounded flex items-center justify-center text-gray-500 text-sm">
-              Advertisement Space (728x90)
+            <AdSenseAd
+  adSlot="1885886529" // ← Your actual ad slot ID
+  className="mx-auto"
+  width={728}
+  height={90}
+/>
             </div>
           </div>
         </div>

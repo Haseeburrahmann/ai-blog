@@ -33,7 +33,7 @@ export default function SEO({
   noindex = false,
   article
 }: SEOProps) {
-  const baseUrl = 'https://aiinsights.com' // Replace with your actual domain
+  const baseUrl = 'https://mindfulblogai.com' // Replace with your actual domain
   const fullTitle = title.includes('AI Insights') ? title : `${title} | AI Insights`
   const fullCanonical = canonical || baseUrl
   const fullOgImage = ogImage.startsWith('http') ? ogImage : `${baseUrl}${ogImage}`

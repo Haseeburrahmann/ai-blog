@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 'use client'
 
 import { useState } from 'react'
@@ -91,8 +92,8 @@ export default function NewAITool() {
       }
 
       const result = await response.json()
+      console.log('Tool created successfully:', result)
       router.push('/admin')
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     } catch (err: any) {
       setError(err.message)
     } finally {

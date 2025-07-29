@@ -1,4 +1,4 @@
-import Link from "next/link";
+import Link from 'next/link'
 
 export default function Home() {
   return (
@@ -12,8 +12,8 @@ export default function Home() {
             </div>
             <nav className="hidden md:flex space-x-8">
               <Link href="/" className="text-blue-600 font-medium">Home</Link>
-              <a href="/blog" className="text-gray-500 hover:text-gray-900">Blog</a>
-              <a href="/tools" className="text-gray-500 hover:text-gray-900">AI Tools</a>
+              <Link href="/blog" className="text-gray-500 hover:text-gray-900">Blog</Link>
+              <Link href="/tools" className="text-gray-500 hover:text-gray-900">AI Tools</Link>
               <a href="#about" className="text-gray-500 hover:text-gray-900">About</a>
             </nav>
           </div>
@@ -31,18 +31,18 @@ export default function Home() {
             and discover the best AI tools to boost your productivity.
           </p>
           <div className="flex justify-center space-x-4">
-            <a 
+            <Link 
               href="/blog"
               className="bg-blue-600 text-white px-6 py-3 rounded-lg hover:bg-blue-700 transition-colors"
             >
               Read Latest Posts
-            </a>
-            <a 
+            </Link>
+            <Link 
               href="/tools"
               className="border border-gray-300 text-gray-700 px-6 py-3 rounded-lg hover:bg-gray-50 transition-colors"
             >
               Explore AI Tools
-            </a>
+            </Link>
           </div>
         </div>
       </section>

@@ -62,6 +62,7 @@ export default function NewBlogPost() {
       }
 
       const result = await response.json()
+      console.log('Post created successfully:', result)
       router.push('/admin')
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     } catch (err: any) {

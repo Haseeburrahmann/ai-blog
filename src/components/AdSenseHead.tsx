@@ -10,7 +10,7 @@ export default function AdSenseHead({ clientId }: AdSenseHeadProps) {
   return (
     <Script
       async
-      src={`https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=${clientId}`}
+      src={`https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-6867328086411956`}
       crossOrigin="anonymous"
       strategy="afterInteractive"
     />

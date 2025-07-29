@@ -31,21 +31,27 @@ export default function AdSenseAd({
   useEffect(() => {
     if (typeof window !== 'undefined' && clientId) {
       try {
-        // Initialize adsbygoogle array if it doesn't exist
+        // Ensure adsbygoogle array exists
         window.adsbygoogle = window.adsbygoogle || []
-        // Push the ad configuration
-        window.adsbygoogle.push({})
+        
+        // Only push if the ad hasn't been loaded yet
+        const adElement = document.querySelector(`[data-ad-slot="${adSlot}"]`)
+        if (adElement && !adElement.hasAttribute('data-adsbygoogle-status')) {
+          window.adsbygoogle.push({})
+        }
       } catch (err) {
         console.error('AdSense error:', err)
       }
     }
-  }, [clientId])
+  }, [clientId, adSlot])
 
   // Don't render if no client ID is provided
   if (!clientId) {
     return (
-      <div className={`bg-gray-100 border-2 border-dashed border-gray-300 rounded-lg flex items-center justify-center text-gray-500 text-sm ${className}`}
-           style={{ width: width || '100%', height: height || 250 }}>
+      <div 
+        className={`bg-gray-100 border-2 border-dashed border-gray-300 rounded-lg flex items-center justify-center text-gray-500 text-sm ${className}`}
+        style={{ width: width || '100%', height: height || 250 }}
+      >
         AdSense Ad Space ({width || 'auto'} x {height || 'auto'})
       </div>
     )

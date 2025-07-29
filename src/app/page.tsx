@@ -239,8 +239,8 @@ export default function Home() {
                         <AdSenseAd
       adSlot="1885886529"
       className="mx-auto"
-      width={728}
-      height={90}
+      width={300}
+    height={250}
     />
                         </div>
                       </div>
@@ -315,8 +315,8 @@ export default function Home() {
             <AdSenseAd
       adSlot="9756304549"
       className="mx-auto"
-      width={728}
-      height={90}
+      width={300}
+    height={250}
     />
             </div>
           </div>
@@ -355,8 +355,8 @@ export default function Home() {
                         <AdSenseAd
       adSlot="8068151493"
       className="mx-auto"
-      width={728}
-      height={90}
+      width={300}
+    height={250}
     />
                         </div>
                       </div>

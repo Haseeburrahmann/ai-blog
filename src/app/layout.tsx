@@ -2,7 +2,7 @@ import type { Metadata } from 'next'
 import { Inter } from 'next/font/google'
 import './globals.css'
 import { AuthProvider } from '@/contexts/AuthContext'
-import AdSenseConfig from '@/components/AdSenseConfig'
+import Script from 'next/script'
 
 const inter = Inter({ subsets: ['latin'] })
 
@@ -17,8 +17,6 @@ export default function RootLayout({
 }: {
   children: React.ReactNode
 }) {
-  const adsenseClientId = 'ca-pub-6867328086411956'
-
   return (
     <html lang="en">
       <head>
@@ -30,8 +28,32 @@ export default function RootLayout({
           {children}
         </AuthProvider>
         
-        {/* AdSense Configuration */}
-        <AdSenseConfig publisherId={adsenseClientId} />
+        {/* Google AdSense Script */}
+        <Script
+          async
+          src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-6867328086411956"
+          crossOrigin="anonymous"
+          strategy="afterInteractive"
+          onLoad={() => {
+            console.log('✅ AdSense script loaded successfully')
+            // Initialize page-level ads
+            try {
+              // eslint-disable-next-line @typescript-eslint/no-explicit-any
+              ;(window as any).adsbygoogle = (window as any).adsbygoogle || []
+              // eslint-disable-next-line @typescript-eslint/no-explicit-any
+              ;(window as any).adsbygoogle.push({
+                google_ad_client: "ca-pub-6867328086411956",
+                enable_page_level_ads: true
+              })
+              console.log('✅ AdSense page-level ads initialized')
+            } catch (error) {
+              console.error('❌ AdSense initialization error:', error)
+            }
+          }}
+          onError={(error) => {
+            console.error('❌ AdSense script failed to load:', error)
+          }}
+        />
       </body>
     </html>
   )

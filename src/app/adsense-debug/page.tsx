@@ -3,82 +3,111 @@
 
 import { useEffect, useState } from 'react'
 import Link from 'next/link'
+import WorkingAdSenseAd from '@/components/WorkingAdSenseAd'
 
 export default function AdSenseDebug() {
-  const [debugInfo, setDebugInfo] = useState<any>({
+  const [debugInfo, setDebugInfo] = useState({
     scriptLoaded: false,
     adsbygoogleExists: false,
-    errors: [],
-    networkRequests: []
+    scriptElement: null as HTMLScriptElement | null,
+    errors: [] as string[],
+    networkRequests: [] as any[]
   })
 
+  const [refreshKey, setRefreshKey] = useState(0)
+
   useEffect(() => {
-    const info: any = {
-      scriptLoaded: false,
-      adsbygoogleExists: false,
-      errors: [],
-      networkRequests: []
+    const checkStatus = () => {
+      const scriptElement = document.querySelector('script[src*="adsbygoogle.js"]') as HTMLScriptElement
+      const adsbygoogleExists = !!(window as any).adsbygoogle
+      
+      setDebugInfo(prev => ({
+        ...prev,
+        scriptLoaded: !!scriptElement,
+        adsbygoogleExists,
+        scriptElement
+      }))
     }
 
-    // Check if AdSense script is loaded
-    const adsenseScript = document.querySelector('script[src*="adsbygoogle.js"]')
-    info.scriptLoaded = !!adsenseScript
+    // Initial check
+    checkStatus()
 
-    // Check if adsbygoogle array exists
-    info.adsbygoogleExists = !!(window as any).adsbygoogle
+    // Check periodically
+    const interval = setInterval(checkStatus, 1000)
 
     // Listen for console errors
     const originalError = console.error
     console.error = (...args) => {
-      if (args.some(arg => String(arg).includes('ads') || String(arg).includes('adsbygoogle'))) {
-        info.errors.push(args.join(' '))
-        setDebugInfo({...info})
+      const errorMsg = args.join(' ')
+      if (errorMsg.includes('ads') || errorMsg.includes('adsbygoogle')) {
+        setDebugInfo(prev => ({
+          ...prev,
+          errors: [...prev.errors, errorMsg]
+        }))
       }
       originalError.apply(console, args)
     }
 
-    // Monitor network requests
-    const originalFetch = window.fetch
-    window.fetch = async (...args) => {
-      const url = String(args[0])
-      if (url.includes('googlesyndication') || url.includes('adsystem')) {
-        info.networkRequests.push({
-          url,
-          timestamp: new Date().toISOString()
-        })
-        setDebugInfo({...info})
-      }
-      return originalFetch.apply(window, args)
-    }
-
-    setDebugInfo(info)
-
     return () => {
+      clearInterval(interval)
       console.error = originalError
-      window.fetch = originalFetch
     }
-  }, [])
+  }, [refreshKey])
+
+  const forceReload = () => {
+    window.location.reload()
+  }
+
+  const manuallyLoadScript = () => {
+    // Remove existing script if any
+    const existingScript = document.querySelector('script[src*="adsbygoogle.js"]')
+    if (existingScript) {
+      existingScript.remove()
+    }
+
+    // Create new script
+    const script = document.createElement('script')
+    script.async = true
+    script.src = 'https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-6867328086411956'
+    script.crossOrigin = 'anonymous'
+    
+    script.onload = () => {
+      console.log('✅ Manual script load successful')
+      // Initialize adsbygoogle
+      try {
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        ;(window as any).adsbygoogle = (window as any).adsbygoogle || []
+        setRefreshKey(prev => prev + 1)
+      } catch (error) {
+        console.error('❌ Manual initialization error:', error)
+      }
+    }
+    
+    script.onerror = (error) => {
+      console.error('❌ Manual script load failed:', error)
+      setDebugInfo(prev => ({
+        ...prev,
+        errors: [...prev.errors, `Manual script load failed: ${error}`]
+      }))
+    }
+    
+    document.head.appendChild(script)
+  }
 
   const testAdSenseAccount = async () => {
     try {
-      const response = await fetch(`https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-6867328086411956`)
-      console.log('AdSense account test response:', response.status)
-      
-      if (response.status === 200) {
-        alert('✅ AdSense account is valid and accessible')
-      } else if (response.status === 400) {
-        alert('❌ AdSense account error (400) - Account may not be approved or ad slots not created')
-      } else {
-        alert(`⚠️ Unexpected response: ${response.status}`)
-      }
+      // Test with a simple image request to check if the domain is blocked
+      const testUrl = 'https://pagead2.googlesyndication.com/pagead/show_ads.js'
+      const response = await fetch(testUrl, { 
+        method: 'HEAD',
+        mode: 'no-cors'
+      })
+      console.log('✅ AdSense domain is accessible')
+      alert('✅ AdSense domain is accessible. If ads still don\'t show, check your account status.')
     } catch (error) {
-      alert(`❌ Network error: ${error}`)
+      console.error('❌ AdSense domain test failed:', error)
+      alert('❌ Cannot reach AdSense servers. This could be due to:\n• Ad blocker\n• Network restrictions\n• Firewall blocking\n• DNS issues')
     }
-  }
-
-  const checkAdsenseStatus = () => {
-    // Open AdSense dashboard
-    window.open('https://www.google.com/adsense/', '_blank')
   }
 
   return (
@@ -90,174 +119,148 @@ export default function AdSenseDebug() {
           </Link>
         </div>
         
-        <h1 className="text-3xl font-bold mb-8">AdSense Debug Information</h1>
+        <h1 className="text-3xl font-bold mb-8">AdSense Debug Dashboard</h1>
         
-        {/* Status Cards */}
-        <div className="grid md:grid-cols-2 gap-6 mb-8">
-          <div className={`p-6 rounded-lg shadow ${debugInfo.scriptLoaded ? 'bg-green-50 border-green-200' : 'bg-red-50 border-red-200'} border`}>
-            <h3 className="font-bold mb-2">AdSense Script Status</h3>
-            <p className={debugInfo.scriptLoaded ? 'text-green-700' : 'text-red-700'}>
+        {/* Real-time Status */}
+        <div className="grid md:grid-cols-3 gap-6 mb-8">
+          <div className={`p-6 rounded-lg shadow border ${debugInfo.scriptLoaded ? 'bg-green-50 border-green-200' : 'bg-red-50 border-red-200'}`}>
+            <h3 className="font-bold mb-2">Script Status</h3>
+            <p className={`text-lg ${debugInfo.scriptLoaded ? 'text-green-700' : 'text-red-700'}`}>
               {debugInfo.scriptLoaded ? '✅ Loaded' : '❌ Not Loaded'}
             </p>
-            <p className="text-sm text-gray-600 mt-2">
-              Script URL: https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-6867328086411956
-            </p>
+            {debugInfo.scriptElement && (
+              <p className="text-xs text-gray-600 mt-2">
+                Found at: {debugInfo.scriptElement.src}
+              </p>
+            )}
           </div>
 
-          <div className={`p-6 rounded-lg shadow ${debugInfo.adsbygoogleExists ? 'bg-green-50 border-green-200' : 'bg-red-50 border-red-200'} border`}>
+          <div className={`p-6 rounded-lg shadow border ${debugInfo.adsbygoogleExists ? 'bg-green-50 border-green-200' : 'bg-red-50 border-red-200'}`}>
             <h3 className="font-bold mb-2">AdsByGoogle Array</h3>
-            <p className={debugInfo.adsbygoogleExists ? 'text-green-700' : 'text-red-700'}>
+            <p className={`text-lg ${debugInfo.adsbygoogleExists ? 'text-green-700' : 'text-red-700'}`}>
               {debugInfo.adsbygoogleExists ? '✅ Available' : '❌ Not Available'}
             </p>
-            <p className="text-sm text-gray-600 mt-2">
-              Array length: {debugInfo.adsbygoogleExists ? (window as any).adsbygoogle?.length || 0 : 'N/A'}
+            {debugInfo.adsbygoogleExists && (
+              <p className="text-xs text-gray-600 mt-2">
+                Length: {(window as any).adsbygoogle?.length || 0}
+              </p>
+            )}
+          </div>
+
+          <div className="p-6 rounded-lg shadow border border-blue-200 bg-blue-50">
+            <h3 className="font-bold mb-2">Publisher ID</h3>
+            <p className="text-sm text-blue-700 font-mono">
+              ca-pub-6867328086411956
+            </p>
+            <p className="text-xs text-gray-600 mt-2">
+              Verify this matches your AdSense account
             </p>
           </div>
         </div>
 
         {/* Action Buttons */}
-        <div className="grid md:grid-cols-2 gap-4 mb-8">
+        <div className="grid md:grid-cols-4 gap-4 mb-8">
+          <button
+            onClick={manuallyLoadScript}
+            className="bg-blue-600 text-white px-4 py-3 rounded-lg hover:bg-blue-700 transition-colors text-sm"
+          >
+            🔄 Load Script Manually
+          </button>
           <button
             onClick={testAdSenseAccount}
-            className="bg-blue-600 text-white px-6 py-3 rounded-lg hover:bg-blue-700 transition-colors"
+            className="bg-green-600 text-white px-4 py-3 rounded-lg hover:bg-green-700 transition-colors text-sm"
           >
-            Test AdSense Account Status
+            🧪 Test AdSense Domain
           </button>
           <button
-            onClick={checkAdsenseStatus}
-            className="bg-green-600 text-white px-6 py-3 rounded-lg hover:bg-green-700 transition-colors"
+            onClick={forceReload}
+            className="bg-orange-600 text-white px-4 py-3 rounded-lg hover:bg-orange-700 transition-colors text-sm"
           >
-            Check AdSense Dashboard
+            🔄 Force Reload Page
           </button>
+          <a
+            href="https://www.google.com/adsense/"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="bg-purple-600 text-white px-4 py-3 rounded-lg hover:bg-purple-700 transition-colors text-center text-sm"
+          >
+            📊 AdSense Dashboard
+          </a>
         </div>
 
-        {/* Errors Section */}
+        {/* Test Ad */}
+        <div className="mb-8 p-6 bg-white rounded-lg shadow">
+          <h3 className="font-bold text-gray-900 mb-4">Test Ad Display</h3>
+          <div className="border-2 border-dashed border-gray-300 p-4 rounded">
+            <WorkingAdSenseAd
+              width={728}
+              height={90}
+              format="auto"
+              responsive={true}
+              className="mx-auto"
+            />
+          </div>
+        </div>
+
+        {/* Errors */}
         {debugInfo.errors.length > 0 && (
           <div className="mb-8 p-6 bg-red-50 border border-red-200 rounded-lg">
-            <h3 className="font-bold text-red-800 mb-4">JavaScript Errors</h3>
-            <ul className="space-y-2">
-              {debugInfo.errors.map((error: string, index: number) => (
-                <li key={index} className="text-red-700 text-sm font-mono bg-red-100 p-2 rounded">
+            <h3 className="font-bold text-red-800 mb-4">Errors Detected</h3>
+            <div className="space-y-2">
+              {debugInfo.errors.map((error, index) => (
+                <div key={index} className="text-red-700 text-sm font-mono bg-red-100 p-2 rounded">
                   {error}
-                </li>
+                </div>
               ))}
-            </ul>
+            </div>
           </div>
         )}
 
-        {/* Network Requests */}
-        {debugInfo.networkRequests.length > 0 && (
-          <div className="mb-8 p-6 bg-blue-50 border border-blue-200 rounded-lg">
-            <h3 className="font-bold text-blue-800 mb-4">AdSense Network Requests</h3>
-            <ul className="space-y-2">
-              {debugInfo.networkRequests.map((request: any, index: number) => (
-                <li key={index} className="text-blue-700 text-sm">
-                  <span className="font-mono bg-blue-100 p-1 rounded">{request.timestamp}</span>
-                  <br />
-                  <span className="text-xs">{request.url}</span>
-                </li>
-              ))}
-            </ul>
-          </div>
-        )}
-
-        {/* Manual Troubleshooting */}
-        <div className="bg-white p-6 rounded-lg shadow mb-8">
-          <h3 className="font-bold text-gray-900 mb-4">Manual Troubleshooting Steps</h3>
-          <div className="space-y-4">
-            <div className="flex items-start space-x-3">
-              <span className="bg-blue-100 text-blue-800 text-sm px-2 py-1 rounded font-bold">1</span>
-              <div>
-                <h4 className="font-medium">Check AdSense Account Status</h4>
-                <p className="text-sm text-gray-600">
-                  Go to your <a href="https://www.google.com/adsense/" target="_blank" rel="noopener noreferrer" className="text-blue-600 hover:underline">AdSense Dashboard</a> and verify:
-                </p>
-                <ul className="text-sm text-gray-600 ml-4 mt-1 list-disc">
-                  <li>Your site is approved</li>
-                  <li>Your account is not under review</li>
-                  <li>No policy violations</li>
-                </ul>
-              </div>
+        {/* Troubleshooting Guide */}
+        <div className="bg-white p-6 rounded-lg shadow">
+          <h3 className="font-bold text-gray-900 mb-4">Troubleshooting Steps</h3>
+          <div className="space-y-4 text-sm">
+            <div className="p-4 bg-yellow-50 border-l-4 border-yellow-400">
+              <h4 className="font-bold text-yellow-800">If Script Won&apos;t Load:</h4>
+              <ul className="text-yellow-700 mt-2 space-y-1 list-disc ml-6">
+                <li>Disable ad blockers (uBlock Origin, AdBlock Plus, etc.)</li>
+                <li>Check browser console for network errors</li>
+                <li>Try incognito/private browsing mode</li>
+                <li>Check if your firewall/network blocks Google ads</li>
+              </ul>
             </div>
 
-            <div className="flex items-start space-x-3">
-              <span className="bg-blue-100 text-blue-800 text-sm px-2 py-1 rounded font-bold">2</span>
-              <div>
-                <h4 className="font-medium">Create Ad Units</h4>
-                <p className="text-sm text-gray-600">
-                  In AdSense dashboard, go to &quot;Ads&quot; → &quot;By ad unit&quot; and create:
-                </p>
-                <ul className="text-sm text-gray-600 ml-4 mt-1 list-disc">
-                  <li>Display ads (various sizes)</li>
-                  <li>Auto ads (recommended for new sites)</li>
-                </ul>
-              </div>
+            <div className="p-4 bg-blue-50 border-l-4 border-blue-400">
+              <h4 className="font-bold text-blue-800">If Script Loads but No Ads:</h4>
+              <ul className="text-blue-700 mt-2 space-y-1 list-disc ml-6">
+                <li>Your AdSense account may still be under review</li>
+                <li>You need to add your website to your AdSense account</li>
+                <li>Create ad units in your AdSense dashboard</li>
+                <li>Wait 24-48 hours for new accounts to start serving ads</li>
+              </ul>
             </div>
 
-            <div className="flex items-start space-x-3">
-              <span className="bg-blue-100 text-blue-800 text-sm px-2 py-1 rounded font-bold">3</span>
-              <div>
-                <h4 className="font-medium">Verify ads.txt</h4>
-                <p className="text-sm text-gray-600">
-                  Check that your ads.txt file is accessible: 
-                  <a href="/ads.txt" target="_blank" className="text-blue-600 hover:underline ml-1">yourdomain.com/ads.txt</a>
-                </p>
-              </div>
-            </div>
-
-            <div className="flex items-start space-x-3">
-              <span className="bg-blue-100 text-blue-800 text-sm px-2 py-1 rounded font-bold">4</span>
-              <div>
-                <h4 className="font-medium">Wait for Approval</h4>
-                <p className="text-sm text-gray-600">
-                  New AdSense accounts can take 24-48 hours (sometimes longer) for:
-                </p>
-                <ul className="text-sm text-gray-600 ml-4 mt-1 list-disc">
-                  <li>Site approval</li>
-                  <li>Ads to start showing</li>
-                  <li>Policy review completion</li>
-                </ul>
-              </div>
+            <div className="p-4 bg-green-50 border-l-4 border-green-400">
+              <h4 className="font-bold text-green-800">AdSense Account Requirements:</h4>
+              <ul className="text-green-700 mt-2 space-y-1 list-disc ml-6">
+                <li>Website must have original, high-quality content</li>
+                <li>Site must be fully functional and navigable</li>
+                <li>Must comply with AdSense content policies</li>
+                <li>Some regions require minimum traffic levels</li>
+              </ul>
             </div>
           </div>
         </div>
 
-        {/* Common Error Solutions */}
-        <div className="bg-yellow-50 border border-yellow-200 p-6 rounded-lg">
-          <h3 className="font-bold text-yellow-800 mb-4">Common 400 Error Solutions</h3>
-          <div className="space-y-3 text-sm text-yellow-700">
-            <div>
-              <strong>Account Not Approved:</strong> Your AdSense account may still be under review. Check your email and AdSense dashboard for approval status.
-            </div>
-            <div>
-              <strong>No Ad Units Created:</strong> You need to create ad units in your AdSense dashboard before ads will show.
-            </div>
-            <div>
-              <strong>Invalid Publisher ID:</strong> Verify your publisher ID (ca-pub-6867328086411956) is correct in your AdSense dashboard.
-            </div>
-            <div>
-              <strong>Site Not Added:</strong> Make sure you&apos;ve added your website domain to your AdSense account under &quot;Sites&quot;.
-            </div>
-            <div>
-              <strong>Policy Violations:</strong> Check for any policy violations that might prevent ads from showing.
-            </div>
-            <div>
-              <strong>Geographic Restrictions:</strong> Some regions have different requirements for AdSense approval.
-            </div>
-          </div>
-        </div>
-
-        {/* Browser Console Instructions */}
+        {/* Browser Info */}
         <div className="mt-8 bg-gray-100 p-6 rounded-lg">
-          <h3 className="font-bold text-gray-900 mb-4">Browser Console Debug</h3>
-          <p className="text-sm text-gray-700 mb-3">
-            Open your browser&apos;s developer console (F12) and look for:
-          </p>
-          <ul className="text-sm text-gray-600 space-y-1 list-disc ml-6">
-            <li>Any red error messages related to &quot;ads&quot; or &quot;adsbygoogle&quot;</li>
-            <li>Network tab: Failed requests to googlesyndication.com</li>
-            <li>Console warnings about ad blocking or policy violations</li>
-          </ul>
+          <h3 className="font-bold text-gray-900 mb-4">Browser Information</h3>
+          <div className="text-sm text-gray-700 space-y-1">
+            <p><strong>User Agent:</strong> {navigator.userAgent}</p>
+            <p><strong>Current URL:</strong> {window.location.href}</p>
+            <p><strong>Referrer:</strong> {document.referrer || 'None'}</p>
+            <p><strong>Cookies Enabled:</strong> {navigator.cookieEnabled ? 'Yes' : 'No'}</p>
+          </div>
         </div>
       </div>
     </div>

@@ -22,6 +22,9 @@ export default function RootLayout({
   return (
     <html lang="en">
       <head>
+        {/* Google AdSense Account Verification */}
+        <meta name="google-adsense-account" content="ca-pub-6867328086411956" />
+        
         {/* AdSense Head Script */}
         {adsenseClientId && <AdSenseHead clientId={adsenseClientId} />}
       </head>

@@ -34,7 +34,7 @@ export default function AdSenseAd({
         // Ensure adsbygoogle array exists
         window.adsbygoogle = window.adsbygoogle || []
         
-        // Only push if the ad hasn't been loaded yet
+        // Push the ad configuration
         const adElement = document.querySelector(`[data-ad-slot="${adSlot}"]`)
         if (adElement && !adElement.hasAttribute('data-adsbygoogle-status')) {
           window.adsbygoogle.push({})

@@ -24,7 +24,7 @@ export default function robots(): MetadataRoute.Robots {
         ],
       },
     ],
-    sitemap: 'https://aiinsights.com/sitemap.xml', // Replace with your actual domain
-    host: 'https://aiinsights.com' // Replace with your actual domain
+    sitemap: 'https://mindfulblogai.com/sitemap.xml', // Replace with your actual domain
+    host: 'https://mindfulblogai.com' // Replace with your actual domain
   }
 }

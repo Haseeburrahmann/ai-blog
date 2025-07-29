@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from 'react'
 import Link from 'next/link'
-import SimpleAdSenseAd from '@/components/SimpleAdSenseConfig'
+import SimpleAdSenseAd from '@/components/SimpleAdSenseAd'
 
 interface BlogPost {
   _id: string

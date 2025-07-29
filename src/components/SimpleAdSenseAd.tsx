@@ -21,13 +21,13 @@ export default function SimpleAdSenseAd({
   const publisherId = 'ca-pub-6867328086411956'
 
   useEffect(() => {
-    if (typeof window !== 'undefined') {
+    if (typeof window !== 'undefined' && adRef.current) {
       try {
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
         const adsbygoogle = (window as any).adsbygoogle || []
         
         // Only push if the ad element exists and hasn't been initialized
-        const adElement = adRef.current?.querySelector('.adsbygoogle')
+        const adElement = adRef.current.querySelector('.adsbygoogle')
         if (adElement && !adElement.hasAttribute('data-adsbygoogle-status')) {
           adsbygoogle.push({})
         }
@@ -36,19 +36,6 @@ export default function SimpleAdSenseAd({
       }
     }
   }, [])
-
-  // If AdSense is not available, show placeholder
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  if (typeof window !== 'undefined' && !(window as any).adsbygoogle) {
-    return (
-      <div 
-        className={`bg-gray-100 border-2 border-dashed border-gray-300 rounded-lg flex items-center justify-center text-gray-500 text-sm ${className}`}
-        style={{ width, height }}
-      >
-        AdSense Loading... ({width} x {height})
-      </div>
-    )
-  }
 
   const adStyle: React.CSSProperties = {
     display: 'block',

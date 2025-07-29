@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
 // AdSense Error Handler Utility
 export interface AdSenseError {
     type: 'network' | 'config' | 'policy' | 'account'
@@ -9,8 +8,7 @@ export interface AdSenseError {
   export class AdSenseErrorHandler {
     private static errors: AdSenseError[] = []
   
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    static logError(error: any): void {
+    static logError(error: unknown): void {
       const errorString = String(error)
       
       if (errorString.includes('400')) {
@@ -50,7 +48,7 @@ export interface AdSenseError {
   
     static async testAdSenseConnection(publisherId: string): Promise<boolean> {
       try {
-        const response = await fetch(`https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=${publisherId}`, {
+        await fetch(`https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=${publisherId}`, {
           method: 'HEAD',
           mode: 'no-cors'
         })
@@ -71,6 +69,7 @@ export interface AdSenseError {
       }
   
       // Check if adsbygoogle array exists
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       if (!(window as any).adsbygoogle) {
         issues.push('AdsByGoogle array not initialized')
       }

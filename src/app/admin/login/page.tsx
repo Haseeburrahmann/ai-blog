@@ -6,7 +6,10 @@ import { useAuth } from '@/contexts/AuthContext'
 import Link from 'next/link'
 
 export default function AdminLogin() {
-  const [password, setPassword] = useState('')
+  const [credentials, setCredentials] = useState({
+    username: '',
+    password: ''
+  })
   const [error, setError] = useState('')
   const [loading, setLoading] = useState(false)
   const { login } = useAuth()
@@ -17,15 +20,26 @@ export default function AdminLogin() {
     setLoading(true)
     setError('')
 
-    const success = login(password)
-    
-    if (success) {
-      router.push('/admin')
+    // Check credentials
+    if (credentials.username === 'Admin' && credentials.password === 'admin123') {
+      const success = login(credentials.password)
+      if (success) {
+        router.push('/admin')
+      } else {
+        setError('Authentication failed. Please try again.')
+      }
     } else {
-      setError('Invalid password. Please try again.')
+      setError('Invalid username or password. Please try again.')
     }
     
     setLoading(false)
+  }
+
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setCredentials(prev => ({
+      ...prev,
+      [e.target.name]: e.target.value
+    }))
   }
 
   return (
@@ -39,25 +53,41 @@ export default function AdminLogin() {
             Admin Login
           </h2>
           <p className="mt-2 text-center text-sm text-gray-600">
-            Enter your admin password to access the dashboard
+            Enter your admin credentials to access the dashboard
           </p>
         </div>
         
         <form className="mt-8 space-y-6" onSubmit={handleSubmit}>
           <div className="bg-white shadow rounded-lg p-6">
+            <div className="mb-4">
+              <label htmlFor="username" className="block text-sm font-medium text-gray-700 mb-2">
+                Username
+              </label>
+              <input
+                id="username"
+                name="username"
+                type="text"
+                required
+                value={credentials.username}
+                onChange={handleChange}
+                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent text-gray-900"
+                placeholder="Enter username (Admin)"
+              />
+            </div>
+
             <div>
               <label htmlFor="password" className="block text-sm font-medium text-gray-700 mb-2">
-                Admin Password
+                Password
               </label>
               <input
                 id="password"
                 name="password"
                 type="password"
                 required
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
+                value={credentials.password}
+                onChange={handleChange}
                 className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent text-gray-900"
-                placeholder="Enter admin password"
+                placeholder="Enter password"
               />
             </div>
 
@@ -84,6 +114,15 @@ export default function AdminLogin() {
           >
             ← Back to Website
           </Link>
+        </div>
+
+        {/* Demo Credentials */}
+        <div className="bg-blue-50 border border-blue-200 rounded-md p-4">
+          <p className="text-blue-800 text-sm">
+            <strong>Demo Credentials:</strong><br />
+            Username: Admin<br />
+            Password: admin123
+          </p>
         </div>
       </div>
     </div>

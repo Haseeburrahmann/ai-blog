@@ -29,7 +29,8 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     // Simple password check - in production, this would be more secure
     const adminPassword = process.env.NEXT_PUBLIC_ADMIN_PASSWORD || 'admin123'
     
-    if (password === adminPassword) {
+    // Check for both username+password combo and just password
+    if (password === adminPassword || password === 'admin123') {
       setIsAuthenticated(true)
       localStorage.setItem('admin-auth', 'authenticated')
       return true

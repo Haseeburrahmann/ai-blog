@@ -57,6 +57,74 @@ const formatDate = (dateString: string) => {
   })
 }
 
+// Function to convert content to HTML with proper formatting
+const formatContent = (content: string) => {
+  let formattedContent = content
+
+  // Convert images ![alt](url) to img tags
+  formattedContent = formattedContent.replace(
+    /!\[([^\]]*)\]\(([^)]+)\)/g,
+    '<img src="$2" alt="$1" class="w-full h-auto rounded-lg my-6 shadow-lg" />'
+  )
+
+  // Convert links [text](url) to anchor tags
+  formattedContent = formattedContent.replace(
+    /\[([^\]]+)\]\(([^)]+)\)/g,
+    '<a href="$2" class="text-blue-600 hover:text-blue-800 underline font-medium" target="_blank" rel="noopener noreferrer">$1</a>'
+  )
+
+  // Convert headers
+  formattedContent = formattedContent.replace(/^### (.*$)/gm, '<h3 class="text-xl font-bold text-gray-900 mt-8 mb-4">$1</h3>')
+  formattedContent = formattedContent.replace(/^## (.*$)/gm, '<h2 class="text-2xl font-bold text-gray-900 mt-10 mb-6">$1</h2>')
+  formattedContent = formattedContent.replace(/^# (.*$)/gm, '<h1 class="text-3xl font-bold text-gray-900 mt-12 mb-8">$1</h1>')
+
+  // Convert bold text **text** to <strong>
+  formattedContent = formattedContent.replace(/\*\*(.*?)\*\*/g, '<strong class="font-bold text-gray-900">$1</strong>')
+
+  // Convert italic text *text* to <em>
+  formattedContent = formattedContent.replace(/\*(.*?)\*/g, '<em class="italic text-gray-800 font-medium">$1</em>')
+
+  // Convert blockquotes
+  formattedContent = formattedContent.replace(/^> (.*$)/gm, '<blockquote class="border-l-4 border-blue-500 bg-blue-50 p-4 my-6 italic text-gray-900 font-medium">$1</blockquote>')
+
+  // Convert unordered lists - ES2017 compatible approach
+  formattedContent = formattedContent.replace(/^- (.*$)/gm, '<li class="mb-2 text-gray-900 font-medium">$1</li>')
+  
+  // Group consecutive list items into ul tags - ES2017 compatible
+  const listItemRegex = /(<li class="mb-2 text-gray-900 font-medium">.*?<\/li>(\s*<li class="mb-2 text-gray-900 font-medium">.*?<\/li>)*)/g
+  formattedContent = formattedContent.replace(listItemRegex, '<ul class="list-disc list-inside my-6 space-y-2 text-gray-900 font-medium">$1</ul>')
+
+  // Convert numbered lists
+  formattedContent = formattedContent.replace(/^\d+\. (.*$)/gm, '<li class="mb-2 text-gray-900 font-medium">$1</li>')
+
+  // Convert horizontal rules
+  formattedContent = formattedContent.replace(/^---$/gm, '<hr class="my-8 border-t-2 border-gray-200" />')
+
+  // Convert paragraphs (any line that's not already formatted)
+  const lines = formattedContent.split('\n')
+  const processedLines = lines.map(line => {
+    const trimmedLine = line.trim()
+    if (trimmedLine === '') return ''
+    
+    // Skip if already formatted as HTML
+    if (trimmedLine.startsWith('<')) return line
+    
+    // Skip if it's a list item indicator
+    if (trimmedLine.startsWith('-') || /^\d+\./.test(trimmedLine)) return line
+    
+    // Skip if it's a header
+    if (trimmedLine.startsWith('#')) return line
+    
+    // Skip if it's a blockquote
+    if (trimmedLine.startsWith('>')) return line
+    
+    // Convert to paragraph with strong text color
+    return `<p class="text-gray-900 mb-6 leading-relaxed font-medium">${line}</p>`
+  })
+
+  return processedLines.join('\n')
+}
+
 // This function will generate the page metadata
 export async function generateMetadata({ params }: BlogPostPageProps) {
   const post = await getBlogPost((await params).slug)
@@ -154,34 +222,10 @@ export default async function BlogPostPage({ params }: BlogPostPageProps) {
 
           {/* Article Content */}
           <div className="px-8 py-8">
-            <div className="prose prose-lg max-w-none">
-              {post.content.split('\n').map((paragraph: string, index: number) => {
-                if (paragraph.trim() === '') return null
-                
-                // Simple markdown-like formatting
-                if (paragraph.startsWith('# ')) {
-                  return (
-                    <h2 key={index} className="text-2xl font-bold text-gray-900 mt-8 mb-4">
-                      {paragraph.substring(2)}
-                    </h2>
-                  )
-                }
-                
-                if (paragraph.startsWith('## ')) {
-                  return (
-                    <h3 key={index} className="text-xl font-semibold text-gray-900 mt-6 mb-3">
-                      {paragraph.substring(3)}
-                    </h3>
-                  )
-                }
-                
-                return (
-                  <p key={index} className="text-gray-700 mb-4 leading-relaxed">
-                    {paragraph}
-                  </p>
-                )
-              })}
-            </div>
+            <div 
+              className="prose prose-lg max-w-none"
+              dangerouslySetInnerHTML={{ __html: formatContent(post.content) }}
+            />
           </div>
 
           {/* Article Footer */}

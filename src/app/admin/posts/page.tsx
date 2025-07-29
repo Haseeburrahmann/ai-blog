@@ -20,6 +20,8 @@ export default function PostsManagement() {
   const [posts, setPosts] = useState<BlogPost[]>([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState('')
+  const [deleteLoading, setDeleteLoading] = useState<string | null>(null)
+  const [showDeleteModal, setShowDeleteModal] = useState<string | null>(null)
 
   useEffect(() => {
     fetchPosts()
@@ -40,6 +42,58 @@ export default function PostsManagement() {
       console.error('Error fetching posts:', error)
     } finally {
       setLoading(false)
+    }
+  }
+
+  const handleDelete = async (postId: string) => {
+    setDeleteLoading(postId)
+    try {
+      const response = await fetch(`/api/admin/posts/${postId}`, {
+        method: 'DELETE',
+      })
+
+      if (response.ok) {
+        setPosts(posts.filter(post => post._id !== postId))
+        setShowDeleteModal(null)
+      } else {
+        const data = await response.json()
+        setError(data.error || 'Failed to delete post')
+      }
+    } catch (error) {
+      setError('Error deleting post')
+      console.error('Error deleting post:', error)
+    } finally {
+      setDeleteLoading(null)
+    }
+  }
+
+  const togglePublishStatus = async (postId: string, currentStatus: boolean) => {
+    try {
+      const response = await fetch(`/api/admin/posts/${postId}`, {
+        method: 'PATCH',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          published: !currentStatus,
+          publishedAt: !currentStatus ? new Date().toISOString() : null
+        }),
+      })
+
+      if (response.ok) {
+        const updatedPost = await response.json()
+        setPosts(posts.map(post => 
+          post._id === postId 
+            ? { ...post, published: !currentStatus, publishedAt: updatedPost.post.publishedAt }
+            : post
+        ))
+      } else {
+        const data = await response.json()
+        setError(data.error || 'Failed to update post status')
+      }
+    } catch (error) {
+      setError('Error updating post status')
+      console.error('Error updating post:', error)
     }
   }
 
@@ -95,7 +149,18 @@ export default function PostsManagement() {
       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         {error && (
           <div className="mb-6 bg-red-50 border border-red-200 rounded-md p-4">
-            <p className="text-red-600 text-sm">{error}</p>
+            <div className="flex">
+              <svg className="w-5 h-5 text-red-400" fill="currentColor" viewBox="0 0 20 20">
+                <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clipRule="evenodd" />
+              </svg>
+              <p className="ml-3 text-red-600 text-sm">{error}</p>
+              <button
+                onClick={() => setError('')}
+                className="ml-auto text-red-400 hover:text-red-600"
+              >
+                ×
+              </button>
+            </div>
           </div>
         )}
 
@@ -183,15 +248,16 @@ export default function PostsManagement() {
                         </span>
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap">
-                        {post.published ? (
-                          <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800">
-                            Published
-                          </span>
-                        ) : (
-                          <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-yellow-100 text-yellow-800">
-                            Draft
-                          </span>
-                        )}
+                        <button
+                          onClick={() => togglePublishStatus(post._id, post.published)}
+                          className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium transition-colors ${
+                            post.published
+                              ? 'bg-green-100 text-green-800 hover:bg-green-200'
+                              : 'bg-yellow-100 text-yellow-800 hover:bg-yellow-200'
+                          }`}
+                        >
+                          {post.published ? 'Published' : 'Draft'}
+                        </button>
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
                         <div>
@@ -204,10 +270,16 @@ export default function PostsManagement() {
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
                         <div className="flex space-x-2">
-                          <button className="text-blue-600 hover:text-blue-900">
+                          <Link
+                            href={`/admin/posts/edit/${post._id}`}
+                            className="text-blue-600 hover:text-blue-900 transition-colors"
+                          >
                             Edit
-                          </button>
-                          <button className="text-red-600 hover:text-red-900">
+                          </Link>
+                          <button
+                            onClick={() => setShowDeleteModal(post._id)}
+                            className="text-red-600 hover:text-red-900 transition-colors"
+                          >
                             Delete
                           </button>
                           {post.published && (
@@ -215,7 +287,7 @@ export default function PostsManagement() {
                               href={`/blog/${post.slug}`}
                               target="_blank"
                               rel="noopener noreferrer"
-                              className="text-green-600 hover:text-green-900"
+                              className="text-green-600 hover:text-green-900 transition-colors"
                             >
                               View
                             </a>
@@ -230,6 +302,42 @@ export default function PostsManagement() {
           </div>
         )}
       </main>
+
+      {/* Delete Confirmation Modal */}
+      {showDeleteModal && (
+        <div className="fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full z-50">
+          <div className="relative top-20 mx-auto p-5 border w-96 shadow-lg rounded-md bg-white">
+            <div className="mt-3 text-center">
+              <div className="mx-auto flex items-center justify-center h-12 w-12 rounded-full bg-red-100">
+                <svg className="h-6 w-6 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L3.732 16.5c-.77.833.192 2.5 1.732 2.5z" />
+                </svg>
+              </div>
+              <h3 className="text-lg font-medium text-gray-900 mt-3">Delete Post</h3>
+              <div className="mt-2 px-7 py-3">
+                <p className="text-sm text-gray-500">
+                  Are you sure you want to delete this post? This action cannot be undone.
+                </p>
+              </div>
+              <div className="flex justify-center space-x-4 px-4 py-3">
+                <button
+                  onClick={() => setShowDeleteModal(null)}
+                  className="px-4 py-2 bg-gray-300 text-gray-800 text-base font-medium rounded-md shadow-sm hover:bg-gray-400 transition-colors"
+                >
+                  Cancel
+                </button>
+                <button
+                  onClick={() => handleDelete(showDeleteModal)}
+                  disabled={deleteLoading === showDeleteModal}
+                  className="px-4 py-2 bg-red-600 text-white text-base font-medium rounded-md shadow-sm hover:bg-red-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                >
+                  {deleteLoading === showDeleteModal ? 'Deleting...' : 'Delete'}
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   )
 }

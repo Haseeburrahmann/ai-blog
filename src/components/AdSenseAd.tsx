@@ -1,78 +1,115 @@
 'use client'
 
-import { useEffect } from 'react'
+import { useEffect, useRef, useState } from 'react'
+import ClientOnly from './ClientOnly'
 
 interface AdSenseAdProps {
-  adSlot: string
-  adFormat?: string
+  adSlot?: string
   width?: number
   height?: number
   className?: string
-  responsive?: boolean
+  format?: 'auto' | 'rectangle' | 'leaderboard' | 'banner'
 }
 
-declare global {
-  interface Window {
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    adsbygoogle: any[]
-  }
-}
-
-export default function AdSenseAd({
+function AdSenseAdComponent({
   adSlot,
-  adFormat = 'auto',
-  width,
-  height,
+  width = 728,
+  height = 90,
   className = '',
-  responsive = true
+  format = 'auto'
 }: AdSenseAdProps) {
-  const clientId = process.env.NEXT_PUBLIC_GOOGLE_ADSENSE_CLIENT_ID
+  const adRef = useRef<HTMLModElement>(null)
+  const [initialized, setInitialized] = useState(false)
+  const publisherId = 'ca-pub-6867328086411956'
 
   useEffect(() => {
-    if (typeof window !== 'undefined' && clientId) {
-      try {
-        // Ensure adsbygoogle array exists
-        window.adsbygoogle = window.adsbygoogle || []
-        
-        // Push the ad configuration
-        const adElement = document.querySelector(`[data-ad-slot="${adSlot}"]`)
-        if (adElement && !adElement.hasAttribute('data-adsbygoogle-status')) {
-          window.adsbygoogle.push({})
+    if (initialized) return
+
+    let attempts = 0
+    const maxAttempts = 20
+
+    const initializeAd = () => {
+      attempts++
+
+      // Check if AdSense is loaded
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      if (!(window as any).adsbygoogle) {
+        if (attempts < maxAttempts) {
+          setTimeout(initializeAd, 500)
+          return
+        } else {
+          console.error('AdSense not loaded after 10 seconds')
+          return
         }
-      } catch (err) {
-        console.error('AdSense error:', err)
+      }
+
+      // Check if ad element exists
+      if (!adRef.current) {
+        console.error('Ad element not found')
+        return
+      }
+
+      // Check if already initialized
+      if (adRef.current.hasAttribute('data-adsbygoogle-status')) {
+        console.log('Ad already initialized')
+        setInitialized(true)
+        return
+      }
+
+      try {
+        // Initialize the ad
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        ;(window as any).adsbygoogle.push({})
+        setInitialized(true)
+        console.log('✅ Ad initialized successfully')
+      } catch (error) {
+        console.error('❌ Ad initialization failed:', error)
       }
     }
-  }, [clientId, adSlot])
 
-  // Don't render if no client ID is provided
-  if (!clientId) {
-    return (
-      <div 
-        className={`bg-gray-100 border-2 border-dashed border-gray-300 rounded-lg flex items-center justify-center text-gray-500 text-sm ${className}`}
-        style={{ width: width || '100%', height: height || 250 }}
-      >
-        AdSense Ad Space ({width || 'auto'} x {height || 'auto'})
-      </div>
-    )
-  }
+    // Start initialization after a delay
+    const timer = setTimeout(initializeAd, 1000)
+    
+    return () => clearTimeout(timer)
+  }, [initialized])
 
   const adStyle: React.CSSProperties = {
     display: 'block',
-    width: width || '100%',
-    height: height || 'auto'
+    width: format === 'auto' ? '100%' : width,
+    height: format === 'auto' ? 'auto' : height
   }
 
   return (
     <div className={className}>
       <ins
+        ref={adRef}
         className="adsbygoogle"
         style={adStyle}
-        data-ad-client={clientId}
-        data-ad-slot={adSlot}
-        data-ad-format={responsive ? 'auto' : adFormat}
-        data-full-width-responsive={responsive ? 'true' : 'false'}
+        data-ad-client={publisherId}
+        {...(adSlot && { 'data-ad-slot': adSlot })}
+        data-ad-format={format}
+        data-full-width-responsive={format === 'auto' ? 'true' : 'false'}
+        suppressHydrationWarning={true}
       />
     </div>
+  )
+}
+
+export default function AdSenseAd(props: AdSenseAdProps) {
+  return (
+    <ClientOnly
+      fallback={
+        <div 
+          className={`bg-gray-100 border border-gray-300 rounded p-4 ${props.className}`} 
+          style={{ width: props.width || '100%', height: props.height || 250 }}
+        >
+          <div className="flex items-center justify-center h-full text-gray-500 text-sm">
+            Loading Ad...
+          </div>
+        </div>
+      }
+    >
+      <AdSenseAdComponent {...props} />
+    </ClientOnly>
   )
 }

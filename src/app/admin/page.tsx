@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from 'react'
 import Link from 'next/link'
+import { useAuth } from '@/contexts/AuthContext'
 
 interface DashboardStats {
   blogPosts: number
@@ -13,6 +14,7 @@ interface DashboardStats {
 export default function AdminDashboard() {
   const [stats, setStats] = useState<DashboardStats | null>(null)
   const [loading, setLoading] = useState(true)
+  const { logout } = useAuth()
 
   useEffect(() => {
     fetchStats()
@@ -28,6 +30,11 @@ export default function AdminDashboard() {
     } finally {
       setLoading(false)
     }
+  }
+
+  const handleLogout = () => {
+    logout()
+    window.location.href = '/admin/login'
   }
 
   if (loading) {
@@ -51,12 +58,20 @@ export default function AdminDashboard() {
               <h1 className="text-3xl font-bold text-gray-900">Admin Dashboard</h1>
               <p className="text-gray-600">Manage your AI blog content</p>
             </div>
-            <Link 
-              href="/"
-              className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors"
-            >
-              View Site
-            </Link>
+            <div className="flex space-x-4">
+              <Link 
+                href="/"
+                className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors"
+              >
+                View Site
+              </Link>
+              <button
+                onClick={handleLogout}
+                className="bg-red-600 text-white px-4 py-2 rounded-lg hover:bg-red-700 transition-colors"
+              >
+                Logout
+              </button>
+            </div>
           </div>
         </div>
       </header>

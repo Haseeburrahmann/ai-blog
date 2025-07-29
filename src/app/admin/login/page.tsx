@@ -115,15 +115,6 @@ export default function AdminLogin() {
             ← Back to Website
           </Link>
         </div>
-
-        {/* Demo Credentials */}
-        <div className="bg-blue-50 border border-blue-200 rounded-md p-4">
-          <p className="text-blue-800 text-sm">
-            <strong>Demo Credentials:</strong><br />
-            Username: Admin<br />
-            Password: admin123
-          </p>
-        </div>
       </div>
     </div>
   )

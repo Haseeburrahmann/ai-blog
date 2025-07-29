@@ -197,7 +197,7 @@ export default function Home() {
             {/* AdSense Leaderboard Ad (728x90) will go here */}
             <div className="h-24 bg-gray-200 rounded flex items-center justify-center text-gray-500 text-sm">
             <AdSenseAd
-  adSlot="1885886529" // ← Your actual ad slot ID
+  adSlot="6551556707" // ← Your actual ad slot ID
   className="mx-auto"
   width={728}
   height={90}
@@ -236,7 +236,12 @@ export default function Home() {
                     {index === 2 && (
                       <div className="bg-gray-50 p-4 border-b">
                         <div className="h-64 bg-gray-200 rounded flex items-center justify-center text-gray-500 text-sm">
-                          Advertisement Space (300x250)
+                        <AdSenseAd
+      adSlot="1885886529"
+      className="mx-auto"
+      width={728}
+      height={90}
+    />
                         </div>
                       </div>
                     )}
@@ -307,7 +312,12 @@ export default function Home() {
           <div className="bg-white rounded-lg p-6 shadow-sm text-center">
             {/* AdSense Large Rectangle Ad (336x280) will go here */}
             <div className="h-72 bg-gray-200 rounded flex items-center justify-center text-gray-500 text-sm mx-auto max-w-sm">
-              Advertisement Space (336x280)
+            <AdSenseAd
+      adSlot="9756304549"
+      className="mx-auto"
+      width={728}
+      height={90}
+    />
             </div>
           </div>
         </div>
@@ -342,7 +352,12 @@ export default function Home() {
                     {index === 3 && (
                       <div className="bg-gray-50 p-4 border-b">
                         <div className="h-64 bg-gray-200 rounded flex items-center justify-center text-gray-500 text-sm">
-                          Advertisement Space (300x250)
+                        <AdSenseAd
+      adSlot="8068151493"
+      className="mx-auto"
+      width={728}
+      height={90}
+    />
                         </div>
                       </div>
                     )}

@@ -1,7 +1,6 @@
 'use client'
 
 import { useAuth } from '@/contexts/AuthContext'
-import { useRouter } from 'next/navigation'
 import { useEffect } from 'react'
 
 interface ProtectedRouteProps {
@@ -10,7 +9,6 @@ interface ProtectedRouteProps {
 
 export default function ProtectedRoute({ children }: ProtectedRouteProps) {
   const { isAuthenticated, loading } = useAuth()
-  const router = useRouter()
 
   console.log('ProtectedRoute - isAuthenticated:', isAuthenticated, 'loading:', loading)
 

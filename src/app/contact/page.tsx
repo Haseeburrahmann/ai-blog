@@ -2,13 +2,6 @@
 
 import { useState } from 'react'
 import Link from 'next/link'
-import type { Metadata } from 'next'
-
-const metadata: Metadata = {
-  title: 'Contact Us | AI Insights',
-  description: 'Get in touch with the AI Insights team. We\'d love to hear from you about AI tools, partnerships, or feedback.',
-  keywords: 'contact ai insights, ai feedback, partnerships, ai questions',
-}
 
 export default function Contact() {
   const [formData, setFormData] = useState({

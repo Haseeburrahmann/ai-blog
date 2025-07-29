@@ -5,13 +5,19 @@ import { useEffect, useState } from 'react'
 import Link from 'next/link'
 import WorkingAdSenseAd from '@/components/WorkingAdSenseAd'
 
+interface NetworkRequest {
+  url: string
+  timestamp: string
+  status?: number
+}
+
 export default function AdSenseDebug() {
   const [debugInfo, setDebugInfo] = useState({
     scriptLoaded: false,
     adsbygoogleExists: false,
     scriptElement: null as HTMLScriptElement | null,
     errors: [] as string[],
-    networkRequests: [] as any[]
+    networkRequests: [] as NetworkRequest[]
   })
 
   const [refreshKey, setRefreshKey] = useState(0)
@@ -19,6 +25,7 @@ export default function AdSenseDebug() {
   useEffect(() => {
     const checkStatus = () => {
       const scriptElement = document.querySelector('script[src*="adsbygoogle.js"]') as HTMLScriptElement
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       const adsbygoogleExists = !!(window as any).adsbygoogle
       
       setDebugInfo(prev => ({
@@ -142,7 +149,7 @@ export default function AdSenseDebug() {
             </p>
             {debugInfo.adsbygoogleExists && (
               <p className="text-xs text-gray-600 mt-2">
-                Length: {(window as any).adsbygoogle?.length || 0}
+                Length: {typeof window !== 'undefined' ? ((window as any).adsbygoogle?.length || 0) : 0}
               </p>
             )}
           </div>
@@ -256,10 +263,10 @@ export default function AdSenseDebug() {
         <div className="mt-8 bg-gray-100 p-6 rounded-lg">
           <h3 className="font-bold text-gray-900 mb-4">Browser Information</h3>
           <div className="text-sm text-gray-700 space-y-1">
-            <p><strong>User Agent:</strong> {navigator.userAgent}</p>
-            <p><strong>Current URL:</strong> {window.location.href}</p>
-            <p><strong>Referrer:</strong> {document.referrer || 'None'}</p>
-            <p><strong>Cookies Enabled:</strong> {navigator.cookieEnabled ? 'Yes' : 'No'}</p>
+            <p><strong>User Agent:</strong> {typeof window !== 'undefined' ? navigator.userAgent : 'N/A'}</p>
+            <p><strong>Current URL:</strong> {typeof window !== 'undefined' ? window.location.href : 'N/A'}</p>
+            <p><strong>Referrer:</strong> {typeof window !== 'undefined' ? (document.referrer || 'None') : 'N/A'}</p>
+            <p><strong>Cookies Enabled:</strong> {typeof window !== 'undefined' ? (navigator.cookieEnabled ? 'Yes' : 'No') : 'N/A'}</p>
           </div>
         </div>
       </div>

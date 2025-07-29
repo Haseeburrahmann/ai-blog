@@ -4,9 +4,9 @@ import connectDB from '@/lib/mongodb'
 import BlogPost from '@/models/BlogPost'
 
 interface BlogPostPageProps {
-  params: {
+  params: Promise<{
     slug: string
-  }
+  }>
 }
 
 async function getBlogPost(slug: string) {
@@ -59,7 +59,7 @@ const formatDate = (dateString: string) => {
 
 // This function will generate the page metadata
 export async function generateMetadata({ params }: BlogPostPageProps) {
-  const post = await getBlogPost(params.slug)
+  const post = await getBlogPost((await params).slug)
   
   if (!post) {
     return {
@@ -75,7 +75,7 @@ export async function generateMetadata({ params }: BlogPostPageProps) {
 }
 
 export default async function BlogPostPage({ params }: BlogPostPageProps) {
-  const post = await getBlogPost(params.slug)
+  const post = await getBlogPost((await params).slug)
   
   if (!post) {
     notFound()

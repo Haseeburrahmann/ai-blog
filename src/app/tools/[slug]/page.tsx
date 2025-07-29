@@ -5,9 +5,9 @@ import connectDB from '@/lib/mongodb'
 import AITool from '@/models/AITool'
 
 interface ToolPageProps {
-  params: {
+  params: Promise<{
     slug: string
-  }
+  }>
 }
 
 async function getTool(slug: string) {
@@ -79,7 +79,7 @@ const renderStars = (rating: number) => {
 
 // Generate page metadata
 export async function generateMetadata({ params }: ToolPageProps) {
-  const tool = await getTool(params.slug)
+  const tool = await getTool((await params).slug)
   
   if (!tool) {
     return {
@@ -95,7 +95,7 @@ export async function generateMetadata({ params }: ToolPageProps) {
 }
 
 export default async function ToolPage({ params }: ToolPageProps) {
-  const tool = await getTool(params.slug)
+  const tool = await getTool((await params).slug)
   
   if (!tool) {
     notFound()

@@ -3,6 +3,8 @@
 import Script from 'next/script'
 
 export default function AdSenseLoader() {
+  const publisherId = 'ca-pub-6867328086411956'
+
   const handleScriptLoad = () => {
     console.log('✅ AdSense script loaded successfully')
     
@@ -11,9 +13,7 @@ export default function AdSenseLoader() {
         // Initialize adsbygoogle array
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
         ;(window as any).adsbygoogle = (window as any).adsbygoogle || []
-        
-        // DO NOT initialize page-level ads here - let AdSense handle it automatically
-        console.log('✅ AdSense array initialized (page-level ads will be handled automatically)')
+        console.log('✅ AdSense array initialized')
       }
     } catch (error) {
       console.error('❌ AdSense initialization error:', error)
@@ -28,7 +28,7 @@ export default function AdSenseLoader() {
     <Script
       id="adsense-script"
       async
-      src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-6867328086411956"
+      src={`https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=${publisherId}`}
       crossOrigin="anonymous"
       strategy="afterInteractive"
       onLoad={handleScriptLoad}

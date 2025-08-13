@@ -1,6 +1,6 @@
 'use client'
 
-import { useEffect, useRef } from 'react'
+import { useEffect, useRef, useState } from 'react'
 
 interface SimpleAdSenseAdProps {
   adSlot?: string
@@ -8,6 +8,7 @@ interface SimpleAdSenseAdProps {
   height?: number
   className?: string
   format?: 'auto' | 'rectangle' | 'leaderboard' | 'banner'
+  style?: React.CSSProperties
 }
 
 export default function SimpleAdSenseAd({
@@ -15,13 +16,15 @@ export default function SimpleAdSenseAd({
   width = 728,
   height = 90,
   className = '',
-  format = 'auto'
+  format = 'auto',
+  style = {}
 }: SimpleAdSenseAdProps) {
   const adRef = useRef<HTMLDivElement>(null)
+  const [adInitialized, setAdInitialized] = useState(false)
   const publisherId = 'ca-pub-6867328086411956'
 
   useEffect(() => {
-    if (typeof window !== 'undefined' && adRef.current) {
+    if (typeof window !== 'undefined' && adRef.current && !adInitialized) {
       try {
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
         const adsbygoogle = (window as any).adsbygoogle || []
@@ -30,17 +33,20 @@ export default function SimpleAdSenseAd({
         const adElement = adRef.current.querySelector('.adsbygoogle')
         if (adElement && !adElement.hasAttribute('data-adsbygoogle-status')) {
           adsbygoogle.push({})
+          setAdInitialized(true)
+          console.log('✅ Ad initialized')
         }
       } catch (error) {
-        console.error('AdSense error:', error)
+        console.error('❌ AdSense error:', error)
       }
     }
-  }, [])
+  }, [adInitialized])
 
   const adStyle: React.CSSProperties = {
     display: 'block',
     width: format === 'auto' ? '100%' : width,
-    height: format === 'auto' ? 'auto' : height
+    height: format === 'auto' ? 'auto' : height,
+    ...style
   }
 
   return (
@@ -52,6 +58,7 @@ export default function SimpleAdSenseAd({
         {...(adSlot && { 'data-ad-slot': adSlot })}
         data-ad-format={format}
         data-full-width-responsive={format === 'auto' ? 'true' : 'false'}
+        suppressHydrationWarning={true}
       />
     </div>
   )

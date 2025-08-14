@@ -1,6 +1,6 @@
 'use client'
 
-import { useEffect, useState } from 'react'
+import { useEffect, useState, Suspense } from 'react'
 import Link from 'next/link'
 import { useSearchParams } from 'next/navigation'
 import Navigation from '@/components/Navigation'
@@ -17,7 +17,8 @@ interface BlogPost {
   readTime: number
 }
 
-export default function BlogListing() {
+// Separate component for search params logic
+function BlogContent() {
   const [posts, setPosts] = useState<BlogPost[]>([])
   const [loading, setLoading] = useState(true)
   const [selectedCategory, setSelectedCategory] = useState<string>('All')
@@ -457,5 +458,29 @@ export default function BlogListing() {
         </section>
       </main>
     </div>
+  )
+}
+
+// Loading component
+function BlogLoading() {
+  return (
+    <div className="min-h-screen bg-gray-50">
+      <Navigation />
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto"></div>
+          <p className="mt-4 text-gray-600">Loading articles...</p>
+        </div>
+      </div>
+    </div>
+  )
+}
+
+// Main export with Suspense
+export default function BlogListing() {
+  return (
+    <Suspense fallback={<BlogLoading />}>
+      <BlogContent />
+    </Suspense>
   )
 }

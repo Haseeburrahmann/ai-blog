@@ -93,7 +93,6 @@ export default function ToolsListing() {
 
   const allFilteredTools = filteredAndSortedTools()
   const featuredTools = allFilteredTools.filter(tool => tool.isFeatured)
-  const regularTools = allFilteredTools.filter(tool => !tool.isFeatured)
 
   // Pagination
   const totalPages = Math.ceil(allFilteredTools.length / toolsPerPage)
@@ -115,7 +114,7 @@ export default function ToolsListing() {
     if (pricing.type === 'Enterprise') return 'Enterprise'
     if (pricing.startingPrice) {
       const cycle = pricing.billingCycle === 'yearly' ? '/year' : pricing.billingCycle === 'monthly' ? '/month' : ''
-      return `${pricing.startingPrice}${cycle}`
+      return `$${pricing.startingPrice}${cycle}`
     }
     return pricing.type
   }

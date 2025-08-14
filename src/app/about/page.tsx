@@ -1,5 +1,7 @@
 import Link from 'next/link'
 import type { Metadata } from 'next'
+import Navigation from '@/components/Navigation'
+import SimpleAdSenseAd from '@/components/SimpleAdSenseAd'
 
 export const metadata: Metadata = {
   title: 'About Us | AI Insights',
@@ -10,23 +12,8 @@ export const metadata: Metadata = {
 export default function About() {
   return (
     <div className="min-h-screen bg-gray-50">
-      {/* Header */}
-      <header className="bg-white shadow-sm border-b">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex justify-between items-center py-6">
-            <Link href="/" className="flex items-center">
-              <h1 className="text-2xl font-bold text-gray-900">AI Insights</h1>
-            </Link>
-            <nav className="hidden md:flex space-x-8">
-              <Link href="/" className="text-gray-500 hover:text-gray-900">Home</Link>
-              <Link href="/blog" className="text-gray-500 hover:text-gray-900">Blog</Link>
-              <Link href="/tools" className="text-gray-500 hover:text-gray-900">AI Tools</Link>
-              <Link href="/about" className="text-blue-600 font-medium">About</Link>
-              <Link href="/contact" className="text-gray-500 hover:text-gray-900">Contact</Link>
-            </nav>
-          </div>
-        </div>
-      </header>
+      {/* Navigation */}
+      <Navigation />
 
       {/* Breadcrumb */}
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
@@ -38,22 +25,34 @@ export default function About() {
       </div>
 
       {/* Hero Section */}
-      <section className="bg-gradient-to-br from-blue-900 via-blue-800 to-purple-900 py-20">
+      <section className="bg-gradient-to-br from-blue-900 via-blue-800 to-purple-900 py-16 sm:py-20">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-          <h1 className="text-5xl font-bold text-white mb-6">About AI Insights</h1>
-          <p className="text-xl text-blue-100 max-w-3xl mx-auto leading-relaxed">
+          <h1 className="text-4xl sm:text-5xl font-bold text-white mb-6">About AI Insights</h1>
+          <p className="text-lg sm:text-xl text-blue-100 max-w-3xl mx-auto leading-relaxed">
             Your trusted source for navigating the rapidly evolving world of artificial intelligence. 
             We demystify AI technology and help you discover the tools that will transform your workflow.
           </p>
         </div>
       </section>
 
+      {/* AdSense Ad - Leaderboard */}
+      <div className="bg-gray-100 py-4">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+          <SimpleAdSenseAd
+            width={728}
+            height={90}
+            format="leaderboard"
+            className="mx-auto"
+          />
+        </div>
+      </div>
+
       {/* Mission Section */}
-      <section className="py-20 bg-white">
+      <section className="py-16 sm:py-20 bg-white">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="grid lg:grid-cols-2 gap-12 items-center">
+          <div className="grid lg:grid-cols-2 gap-8 lg:gap-12 items-center">
             <div>
-              <h2 className="text-4xl font-bold text-gray-900 mb-6">Our Mission</h2>
+              <h2 className="text-3xl sm:text-4xl font-bold text-gray-900 mb-6">Our Mission</h2>
               <div className="space-y-4 text-lg text-gray-700 leading-relaxed">
                 <p>
                   At AI Insights, we believe that artificial intelligence should be accessible and beneficial for everyone. 
@@ -67,32 +66,32 @@ export default function About() {
                 </p>
               </div>
             </div>
-            <div className="bg-gradient-to-br from-blue-50 to-purple-50 p-8 rounded-2xl">
+            <div className="bg-gradient-to-br from-blue-50 to-purple-50 p-6 sm:p-8 rounded-2xl">
               <div className="space-y-6">
                 <div className="flex items-center space-x-4">
-                  <div className="w-12 h-12 bg-blue-600 rounded-lg flex items-center justify-center">
+                  <div className="w-12 h-12 bg-blue-600 rounded-lg flex items-center justify-center flex-shrink-0">
                     <svg className="w-6 h-6 text-white" fill="currentColor" viewBox="0 0 20 20">
                       <path d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
                     </svg>
                   </div>
                   <div>
                     <h3 className="font-bold text-gray-900">Trusted Reviews</h3>
-                    <p className="text-gray-600">Honest, hands-on testing of AI tools</p>
+                    <p className="text-gray-600 text-sm">Honest, hands-on testing of AI tools</p>
                   </div>
                 </div>
                 <div className="flex items-center space-x-4">
-                  <div className="w-12 h-12 bg-green-600 rounded-lg flex items-center justify-center">
+                  <div className="w-12 h-12 bg-green-600 rounded-lg flex items-center justify-center flex-shrink-0">
                     <svg className="w-6 h-6 text-white" fill="currentColor" viewBox="0 0 20 20">
                       <path d="M13 6a3 3 0 11-6 0 3 3 0 016 0zM18 8a2 2 0 11-4 0 2 2 0 014 0zM14 15a4 4 0 00-8 0v3h8v-3z"/>
                     </svg>
                   </div>
                   <div>
                     <h3 className="font-bold text-gray-900">Expert Insights</h3>
-                    <p className="text-gray-600">Analysis from AI industry professionals</p>
+                    <p className="text-gray-600 text-sm">Analysis from AI industry professionals</p>
                   </div>
                 </div>
                 <div className="flex items-center space-x-4">
-                  <div className="w-12 h-12 bg-purple-600 rounded-lg flex items-center justify-center">
+                  <div className="w-12 h-12 bg-purple-600 rounded-lg flex items-center justify-center flex-shrink-0">
                     <svg className="w-6 h-6 text-white" fill="currentColor" viewBox="0 0 20 20">
                       <path fillRule="evenodd" d="M6 6V5a3 3 0 013-3h2a3 3 0 013 3v1h2a2 2 0 012 2v3.57A22.952 22.952 0 0110 13a22.95 22.95 0 01-8-1.43V8a2 2 0 012-2h2zm2-1a1 1 0 011-1h2a1 1 0 011 1v1H8V5zm1 5a1 1 0 011-1h.01a1 1 0 110 2H10a1 1 0 01-1-1z" clipRule="evenodd"/>
                       <path d="M2 13.692V16a2 2 0 002 2h12a2 2 0 002-2v-2.308A24.974 24.974 0 0110 15c-2.796 0-5.487-.46-8-1.308z"/>
@@ -100,7 +99,7 @@ export default function About() {
                   </div>
                   <div>
                     <h3 className="font-bold text-gray-900">Practical Guidance</h3>
-                    <p className="text-gray-600">Real-world implementation strategies</p>
+                    <p className="text-gray-600 text-sm">Real-world implementation strategies</p>
                   </div>
                 </div>
               </div>
@@ -110,17 +109,17 @@ export default function About() {
       </section>
 
       {/* What We Do Section */}
-      <section className="py-20 bg-gray-50">
+      <section className="py-16 sm:py-20 bg-gray-50">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="text-center mb-16">
-            <h2 className="text-4xl font-bold text-gray-900 mb-4">What We Do</h2>
-            <p className="text-xl text-gray-600 max-w-3xl mx-auto">
+          <div className="text-center mb-12 sm:mb-16">
+            <h2 className="text-3xl sm:text-4xl font-bold text-gray-900 mb-4">What We Do</h2>
+            <p className="text-lg sm:text-xl text-gray-600 max-w-3xl mx-auto">
               We cover every aspect of the AI landscape to keep you informed and ahead of the curve
             </p>
           </div>
 
-          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
-            <div className="bg-white p-8 rounded-xl shadow-lg hover:shadow-xl transition-shadow">
+          <div className="grid gap-6 sm:gap-8 md:grid-cols-2 lg:grid-cols-3">
+            <div className="bg-white p-6 sm:p-8 rounded-xl shadow-lg hover:shadow-xl transition-shadow">
               <div className="w-12 h-12 bg-blue-600 rounded-lg flex items-center justify-center mb-6">
                 <svg className="w-6 h-6 text-white" fill="currentColor" viewBox="0 0 20 20">
                   <path d="M2 5a2 2 0 012-2h7a2 2 0 012 2v4a2 2 0 01-2 2H9l-3 3v-3H4a2 2 0 01-2-2V5z"/>
@@ -134,7 +133,7 @@ export default function About() {
               </p>
             </div>
 
-            <div className="bg-white p-8 rounded-xl shadow-lg hover:shadow-xl transition-shadow">
+            <div className="bg-white p-6 sm:p-8 rounded-xl shadow-lg hover:shadow-xl transition-shadow">
               <div className="w-12 h-12 bg-green-600 rounded-lg flex items-center justify-center mb-6">
                 <svg className="w-6 h-6 text-white" fill="currentColor" viewBox="0 0 20 20">
                   <path fillRule="evenodd" d="M11.49 3.17c-.38-1.56-2.6-1.56-2.98 0a1.532 1.532 0 01-2.286.948c-1.372-.836-2.942.734-2.106 2.106.54.886.061 2.042-.947 2.287-1.561.379-1.561 2.6 0 2.978a1.532 1.532 0 01.947 2.287c-.836 1.372.734 2.942 2.106 2.106a1.532 1.532 0 012.287.947c.379 1.561 2.6 1.561 2.978 0a1.533 1.533 0 012.287-.947c1.372.836 2.942-.734 2.106-2.106a1.533 1.533 0 01.947-2.287c1.561-.379 1.561-2.6 0-2.978a1.532 1.532 0 01-.947-2.287c.836-1.372-.734-2.942-2.106-2.106a1.532 1.532 0 01-2.287-.947zM10 13a3 3 0 100-6 3 3 0 000 6z" clipRule="evenodd"/>
@@ -147,7 +146,7 @@ export default function About() {
               </p>
             </div>
 
-            <div className="bg-white p-8 rounded-xl shadow-lg hover:shadow-xl transition-shadow">
+            <div className="bg-white p-6 sm:p-8 rounded-xl shadow-lg hover:shadow-xl transition-shadow">
               <div className="w-12 h-12 bg-purple-600 rounded-lg flex items-center justify-center mb-6">
                 <svg className="w-6 h-6 text-white" fill="currentColor" viewBox="0 0 20 20">
                   <path d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
@@ -160,7 +159,7 @@ export default function About() {
               </p>
             </div>
 
-            <div className="bg-white p-8 rounded-xl shadow-lg hover:shadow-xl transition-shadow">
+            <div className="bg-white p-6 sm:p-8 rounded-xl shadow-lg hover:shadow-xl transition-shadow">
               <div className="w-12 h-12 bg-orange-600 rounded-lg flex items-center justify-center mb-6">
                 <svg className="w-6 h-6 text-white" fill="currentColor" viewBox="0 0 20 20">
                   <path fillRule="evenodd" d="M3 4a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zm0 4a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zm0 4a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zm0 4a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1z" clipRule="evenodd"/>
@@ -173,7 +172,7 @@ export default function About() {
               </p>
             </div>
 
-            <div className="bg-white p-8 rounded-xl shadow-lg hover:shadow-xl transition-shadow">
+            <div className="bg-white p-6 sm:p-8 rounded-xl shadow-lg hover:shadow-xl transition-shadow">
               <div className="w-12 h-12 bg-red-600 rounded-lg flex items-center justify-center mb-6">
                 <svg className="w-6 h-6 text-white" fill="currentColor" viewBox="0 0 20 20">
                   <path d="M13 6a3 3 0 11-6 0 3 3 0 016 0zM18 8a2 2 0 11-4 0 2 2 0 014 0zM14 15a4 4 0 00-8 0v3h8v-3z"/>
@@ -186,7 +185,7 @@ export default function About() {
               </p>
             </div>
 
-            <div className="bg-white p-8 rounded-xl shadow-lg hover:shadow-xl transition-shadow">
+            <div className="bg-white p-6 sm:p-8 rounded-xl shadow-lg hover:shadow-xl transition-shadow">
               <div className="w-12 h-12 bg-indigo-600 rounded-lg flex items-center justify-center mb-6">
                 <svg className="w-6 h-6 text-white" fill="currentColor" viewBox="0 0 20 20">
                   <path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-8-3a1 1 0 00-.867.5 1 1 0 11-1.731-1A3 3 0 0113 8a3.001 3.001 0 01-2 2.83V11a1 1 0 11-2 0v-1a1 1 0 011-1 1 1 0 100-2zm0 8a1 1 0 100-2 1 1 0 000 2z" clipRule="evenodd"/>
@@ -202,17 +201,29 @@ export default function About() {
         </div>
       </section>
 
+      {/* AdSense Ad - Large Rectangle */}
+      <div className="bg-gray-100 py-8">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+          <SimpleAdSenseAd
+            width={336}
+            height={280}
+            format="rectangle"
+            className="mx-auto"
+          />
+        </div>
+      </div>
+
       {/* Our Approach Section */}
-      <section className="py-20 bg-white">
+      <section className="py-16 sm:py-20 bg-white">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="text-center mb-16">
-            <h2 className="text-4xl font-bold text-gray-900 mb-4">Our Approach</h2>
-            <p className="text-xl text-gray-600 max-w-3xl mx-auto">
+          <div className="text-center mb-12 sm:mb-16">
+            <h2 className="text-3xl sm:text-4xl font-bold text-gray-900 mb-4">Our Approach</h2>
+            <p className="text-lg sm:text-xl text-gray-600 max-w-3xl mx-auto">
               We follow a rigorous methodology to ensure our content is accurate, helpful, and actionable
             </p>
           </div>
 
-          <div className="grid lg:grid-cols-3 gap-8">
+          <div className="grid gap-8 lg:grid-cols-3">
             <div className="text-center">
               <div className="w-16 h-16 bg-blue-600 rounded-full flex items-center justify-center mx-auto mb-6">
                 <span className="text-2xl font-bold text-white">1</span>
@@ -250,52 +261,52 @@ export default function About() {
       </section>
 
       {/* Statistics Section */}
-      <section className="py-20 bg-gradient-to-r from-blue-600 to-purple-600">
+      <section className="py-16 sm:py-20 bg-gradient-to-r from-blue-600 to-purple-600">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="text-center mb-16">
-            <h2 className="text-4xl font-bold text-white mb-4">By the Numbers</h2>
-            <p className="text-xl text-blue-100">Our impact in the AI community</p>
+          <div className="text-center mb-12 sm:mb-16">
+            <h2 className="text-3xl sm:text-4xl font-bold text-white mb-4">By the Numbers</h2>
+            <p className="text-lg sm:text-xl text-blue-100">Our impact in the AI community</p>
           </div>
 
-          <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-8">
+          <div className="grid grid-cols-2 gap-6 md:grid-cols-4">
             <div className="text-center">
-              <div className="text-4xl font-bold text-white mb-2">500+</div>
-              <div className="text-blue-100">AI Tools Reviewed</div>
+              <div className="text-3xl sm:text-4xl font-bold text-white mb-2">500+</div>
+              <div className="text-blue-100 text-sm sm:text-base">AI Tools Reviewed</div>
             </div>
             <div className="text-center">
-              <div className="text-4xl font-bold text-white mb-2">50K+</div>
-              <div className="text-blue-100">Monthly Readers</div>
+              <div className="text-3xl sm:text-4xl font-bold text-white mb-2">50K+</div>
+              <div className="text-blue-100 text-sm sm:text-base">Monthly Readers</div>
             </div>
             <div className="text-center">
-              <div className="text-4xl font-bold text-white mb-2">200+</div>
-              <div className="text-blue-100">In-Depth Articles</div>
+              <div className="text-3xl sm:text-4xl font-bold text-white mb-2">200+</div>
+              <div className="text-blue-100 text-sm sm:text-base">In-Depth Articles</div>
             </div>
             <div className="text-center">
-              <div className="text-4xl font-bold text-white mb-2">24/7</div>
-              <div className="text-blue-100">Content Updates</div>
+              <div className="text-3xl sm:text-4xl font-bold text-white mb-2">24/7</div>
+              <div className="text-blue-100 text-sm sm:text-base">Content Updates</div>
             </div>
           </div>
         </div>
       </section>
 
       {/* Team Section */}
-      <section className="py-20 bg-gray-50">
+      <section className="py-16 sm:py-20 bg-gray-50">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="text-center mb-16">
-            <h2 className="text-4xl font-bold text-gray-900 mb-4">Our Team</h2>
-            <p className="text-xl text-gray-600 max-w-3xl mx-auto">
+          <div className="text-center mb-12 sm:mb-16">
+            <h2 className="text-3xl sm:text-4xl font-bold text-gray-900 mb-4">Our Team</h2>
+            <p className="text-lg sm:text-xl text-gray-600 max-w-3xl mx-auto">
               Meet the experts behind AI Insights - experienced professionals passionate about making AI accessible
             </p>
           </div>
 
-          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
+          <div className="grid gap-6 sm:gap-8 md:grid-cols-2 lg:grid-cols-3">
             <div className="bg-white rounded-xl shadow-lg overflow-hidden">
-              <div className="p-8 text-center">
-                <div className="w-24 h-24 bg-gradient-to-br from-blue-500 to-purple-600 rounded-full mx-auto mb-6 flex items-center justify-center">
-                  <span className="text-2xl font-bold text-white">AI</span>
+              <div className="p-6 sm:p-8 text-center">
+                <div className="w-20 h-20 sm:w-24 sm:h-24 bg-gradient-to-br from-blue-500 to-purple-600 rounded-full mx-auto mb-6 flex items-center justify-center">
+                  <span className="text-lg sm:text-2xl font-bold text-white">AI</span>
                 </div>
                 <h3 className="text-xl font-bold text-gray-900 mb-2">AI Research Team</h3>
-                <p className="text-gray-600 mb-4">Lead Researchers</p>
+                <p className="text-gray-600 mb-4 text-sm">Lead Researchers</p>
                 <p className="text-gray-600 text-sm leading-relaxed">
                   Our research team consists of AI experts with backgrounds in machine learning, 
                   data science, and software engineering. They ensure our content is technically accurate and up-to-date.
@@ -304,12 +315,12 @@ export default function About() {
             </div>
 
             <div className="bg-white rounded-xl shadow-lg overflow-hidden">
-              <div className="p-8 text-center">
-                <div className="w-24 h-24 bg-gradient-to-br from-green-500 to-blue-600 rounded-full mx-auto mb-6 flex items-center justify-center">
-                  <span className="text-2xl font-bold text-white">ED</span>
+              <div className="p-6 sm:p-8 text-center">
+                <div className="w-20 h-20 sm:w-24 sm:h-24 bg-gradient-to-br from-green-500 to-blue-600 rounded-full mx-auto mb-6 flex items-center justify-center">
+                  <span className="text-lg sm:text-2xl font-bold text-white">ED</span>
                 </div>
                 <h3 className="text-xl font-bold text-gray-900 mb-2">Editorial Team</h3>
-                <p className="text-gray-600 mb-4">Content Creators</p>
+                <p className="text-gray-600 mb-4 text-sm">Content Creators</p>
                 <p className="text-gray-600 text-sm leading-relaxed">
                   Our editorial team transforms complex AI concepts into accessible content. 
                   They have extensive experience in technology journalism and content creation.
@@ -318,12 +329,12 @@ export default function About() {
             </div>
 
             <div className="bg-white rounded-xl shadow-lg overflow-hidden">
-              <div className="p-8 text-center">
-                <div className="w-24 h-24 bg-gradient-to-br from-purple-500 to-pink-600 rounded-full mx-auto mb-6 flex items-center justify-center">
-                  <span className="text-2xl font-bold text-white">QA</span>
+              <div className="p-6 sm:p-8 text-center">
+                <div className="w-20 h-20 sm:w-24 sm:h-24 bg-gradient-to-br from-purple-500 to-pink-600 rounded-full mx-auto mb-6 flex items-center justify-center">
+                  <span className="text-lg sm:text-2xl font-bold text-white">QA</span>
                 </div>
                 <h3 className="text-xl font-bold text-gray-900 mb-2">Quality Assurance</h3>
-                <p className="text-gray-600 mb-4">Testing Specialists</p>
+                <p className="text-gray-600 mb-4 text-sm">Testing Specialists</p>
                 <p className="text-gray-600 text-sm leading-relaxed">
                   Our QA team rigorously tests every AI tool we review, ensuring our recommendations 
                   are based on real-world usage and performance metrics.
@@ -334,23 +345,35 @@ export default function About() {
         </div>
       </section>
 
+      {/* AdSense Ad - Medium Rectangle */}
+      <div className="bg-gray-100 py-8">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+          <SimpleAdSenseAd
+            width={300}
+            height={250}
+            format="rectangle"
+            className="mx-auto"
+          />
+        </div>
+      </div>
+
       {/* CTA Section */}
-      <section className="py-20 bg-white">
+      <section className="py-16 sm:py-20 bg-white">
         <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-          <h2 className="text-4xl font-bold text-gray-900 mb-4">Join Our Community</h2>
-          <p className="text-xl text-gray-600 mb-8">
+          <h2 className="text-3xl sm:text-4xl font-bold text-gray-900 mb-4">Join Our Community</h2>
+          <p className="text-lg sm:text-xl text-gray-600 mb-8">
             Stay updated with the latest AI developments and connect with fellow AI enthusiasts
           </p>
           <div className="flex flex-col sm:flex-row justify-center gap-4">
             <Link
               href="/blog"
-              className="bg-blue-600 text-white px-8 py-4 rounded-lg hover:bg-blue-700 transition-colors font-semibold"
+              className="bg-blue-600 text-white px-6 sm:px-8 py-3 sm:py-4 rounded-lg hover:bg-blue-700 transition-colors font-semibold text-center"
             >
               Read Our Blog
             </Link>
             <Link
               href="/contact"
-              className="border-2 border-blue-600 text-blue-600 px-8 py-4 rounded-lg hover:bg-blue-600 hover:text-white transition-colors font-semibold"
+              className="border-2 border-blue-600 text-blue-600 px-6 sm:px-8 py-3 sm:py-4 rounded-lg hover:bg-blue-600 hover:text-white transition-colors font-semibold text-center"
             >
               Get In Touch
             </Link>

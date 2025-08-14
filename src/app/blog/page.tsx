@@ -2,6 +2,9 @@
 
 import { useEffect, useState } from 'react'
 import Link from 'next/link'
+import { useSearchParams } from 'next/navigation'
+import Navigation from '@/components/Navigation'
+import SimpleAdSenseAd from '@/components/SimpleAdSenseAd'
 
 interface BlogPost {
   _id: string
@@ -18,14 +21,25 @@ export default function BlogListing() {
   const [posts, setPosts] = useState<BlogPost[]>([])
   const [loading, setLoading] = useState(true)
   const [selectedCategory, setSelectedCategory] = useState<string>('All')
+  const [searchQuery, setSearchQuery] = useState('')
   const [currentPage, setCurrentPage] = useState(1)
+  const [emailSubscription, setEmailSubscription] = useState('')
+  const [subscriptionStatus, setSubscriptionStatus] = useState<'idle' | 'loading' | 'success' | 'error'>('idle')
   const postsPerPage = 12
+
+  const searchParams = useSearchParams()
 
   const categories = ['All', 'AI News', 'Tool Reviews', 'Tutorials', 'Industry Analysis', 'Opinion']
 
   useEffect(() => {
     fetchPosts()
-  }, [])
+    
+    // Check for category parameter in URL
+    const categoryParam = searchParams?.get('category')
+    if (categoryParam) {
+      setSelectedCategory(categoryParam.replace('+', ' '))
+    }
+  }, [searchParams])
 
   const fetchPosts = async () => {
     try {
@@ -42,9 +56,15 @@ export default function BlogListing() {
     }
   }
 
-  const filteredPosts = selectedCategory === 'All' 
-    ? posts 
-    : posts.filter(post => post.category === selectedCategory)
+  const filteredPosts = posts.filter(post => {
+    const categoryMatch = selectedCategory === 'All' || post.category === selectedCategory
+    const searchMatch = searchQuery === '' || 
+      post.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      post.excerpt.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      post.tags.some(tag => tag.toLowerCase().includes(searchQuery.toLowerCase()))
+    
+    return categoryMatch && searchMatch
+  })
 
   // Pagination
   const totalPages = Math.ceil(filteredPosts.length / postsPerPage)
@@ -72,7 +92,30 @@ export default function BlogListing() {
 
   const handleCategoryChange = (category: string) => {
     setSelectedCategory(category)
-    setCurrentPage(1) // Reset to first page when category changes
+    setCurrentPage(1)
+    setSearchQuery('')
+  }
+
+  const handleSearchChange = (query: string) => {
+    setSearchQuery(query)
+    setCurrentPage(1)
+  }
+
+  const handleNewsletterSubmit = async (e: React.FormEvent) => {
+    e.preventDefault()
+    if (!emailSubscription.trim()) return
+
+    setSubscriptionStatus('loading')
+    
+    try {
+      await new Promise(resolve => setTimeout(resolve, 1000))
+      setSubscriptionStatus('success')
+      setEmailSubscription('')
+      setTimeout(() => setSubscriptionStatus('idle'), 3000)
+    } catch {
+      setSubscriptionStatus('error')
+      setTimeout(() => setSubscriptionStatus('idle'), 3000)
+    }
   }
 
   const generatePageNumbers = () => {
@@ -94,6 +137,7 @@ export default function BlogListing() {
   if (loading) {
     return (
       <div className="min-h-screen bg-gray-50">
+        <Navigation />
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
           <div className="text-center">
             <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto"></div>
@@ -106,55 +150,58 @@ export default function BlogListing() {
 
   return (
     <div className="min-h-screen bg-gray-50">
-      {/* Header */}
-      <header className="bg-white shadow-sm border-b sticky top-0 z-50">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex justify-between items-center py-6">
-            <Link href="/" className="flex items-center">
-              <h1 className="text-2xl font-bold text-gray-900">AI Insights</h1>
-            </Link>
-            <nav className="hidden md:flex space-x-8">
-              <Link href="/" className="text-gray-500 hover:text-gray-900 transition-colors">Home</Link>
-              <Link href="/blog" className="text-blue-600 font-medium">Blog</Link>
-              <Link href="/tools" className="text-gray-500 hover:text-gray-900 transition-colors">AI Tools</Link>
-              <Link href="/about" className="text-gray-500 hover:text-gray-900 transition-colors">About</Link>
-              <Link href="/contact" className="text-gray-500 hover:text-gray-900 transition-colors">Contact</Link>
-            </nav>
-          </div>
-        </div>
-      </header>
+      {/* Navigation */}
+      <Navigation />
 
       {/* Hero Section */}
-      <section className="bg-gradient-to-br from-blue-900 via-blue-800 to-purple-900 py-20">
+      <section className="bg-gradient-to-br from-blue-900 via-blue-800 to-purple-900 py-16 sm:py-20">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-          <h2 className="text-5xl font-bold text-white mb-6">
+          <h1 className="text-4xl sm:text-5xl font-bold text-white mb-6">
             AI Insights Blog
-          </h2>
-          <p className="text-xl text-blue-100 max-w-3xl mx-auto leading-relaxed">
+          </h1>
+          <p className="text-lg sm:text-xl text-blue-100 max-w-3xl mx-auto leading-relaxed">
             Stay informed with the latest developments in artificial intelligence, 
             machine learning, and emerging technologies. Expert analysis you can trust.
           </p>
         </div>
       </section>
 
-      {/* AdSense Ad Space - Leaderboard */}
+      {/* AdSense Ad - Leaderboard */}
       <div className="bg-gray-100 py-4">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-          <div className="bg-white rounded-lg p-4 shadow-sm">
-            {/* AdSense Leaderboard Ad (728x90) will go here */}
-            <div className="h-24 bg-gray-200 rounded flex items-center justify-center text-gray-500 text-sm">
-              Advertisement Space (728x90)
-            </div>
-          </div>
+          <SimpleAdSenseAd
+            width={728}
+            height={90}
+            format="leaderboard"
+            className="mx-auto"
+          />
         </div>
       </div>
 
-      {/* Category Filter */}
+      {/* Search and Filter */}
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         <div className="bg-white rounded-lg shadow-sm p-6">
-          <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
-            <div>
-              <h3 className="text-lg font-semibold text-gray-900 mb-2">Filter by Category</h3>
+          <div className="flex flex-col lg:flex-row justify-between items-start lg:items-center gap-6">
+            <div className="w-full lg:w-auto">
+              <h3 className="text-lg font-semibold text-gray-900 mb-4">Search & Filter</h3>
+              
+              {/* Search Bar */}
+              <div className="mb-4 lg:mb-0">
+                <div className="relative">
+                  <input
+                    type="text"
+                    placeholder="Search articles, topics, or tags..."
+                    value={searchQuery}
+                    onChange={(e) => handleSearchChange(e.target.value)}
+                    className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                  />
+                  <svg className="absolute left-3 top-2.5 h-5 w-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                  </svg>
+                </div>
+              </div>
+
+              {/* Category Filter */}
               <div className="flex flex-wrap gap-2">
                 {categories.map((category) => (
                   <button
@@ -171,8 +218,12 @@ export default function BlogListing() {
                 ))}
               </div>
             </div>
-            <div className="text-sm text-gray-600">
-              Showing {currentPosts.length} of {filteredPosts.length} articles
+            
+            <div className="text-sm text-gray-600 lg:text-right">
+              <p>Showing {currentPosts.length} of {filteredPosts.length} articles</p>
+              {searchQuery && (
+                <p className="text-blue-600">Results for: &quot;{searchQuery}&quot;</p>
+              )}
             </div>
           </div>
         </div>
@@ -186,25 +237,44 @@ export default function BlogListing() {
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
             </svg>
             <h3 className="text-lg font-medium text-gray-900 mb-2">
-              {selectedCategory === 'All' ? 'No posts published yet' : `No posts in ${selectedCategory}`}
+              {searchQuery 
+                ? `No articles found for "${searchQuery}"` 
+                : selectedCategory === 'All' 
+                  ? 'No posts published yet' 
+                  : `No posts in ${selectedCategory}`
+              }
             </h3>
-            <p className="text-gray-600">
-              {selectedCategory === 'All' 
-                ? 'Check back soon for the latest AI insights!' 
-                : 'Try selecting a different category.'}
+            <p className="text-gray-600 mb-6">
+              {searchQuery 
+                ? 'Try a different search term or browse all articles.' 
+                : selectedCategory === 'All' 
+                  ? 'Check back soon for the latest AI insights!' 
+                  : 'Try selecting a different category.'
+              }
             </p>
+            {searchQuery && (
+              <button
+                onClick={() => setSearchQuery('')}
+                className="text-blue-600 hover:text-blue-800 font-medium"
+              >
+                Clear search
+              </button>
+            )}
           </div>
         ) : (
           <>
-            <div className="grid gap-8 md:grid-cols-2 lg:grid-cols-3">
+            <div className="grid gap-6 sm:gap-8 md:grid-cols-2 lg:grid-cols-3">
               {currentPosts.map((post, index) => (
                 <div key={post._id}>
                   {/* AdSense Medium Rectangle for every 6th article */}
                   {index === 5 && (
-                    <div className="bg-white rounded-lg shadow-sm p-6 mb-8">
-                      <div className="h-64 bg-gray-200 rounded flex items-center justify-center text-gray-500 text-sm">
-                        Advertisement Space (300x250)
-                      </div>
+                    <div className="bg-white rounded-lg shadow-sm p-6 mb-8 col-span-full">
+                      <SimpleAdSenseAd
+                        width={300}
+                        height={250}
+                        format="rectangle"
+                        className="mx-auto"
+                      />
                     </div>
                   )}
                   
@@ -237,12 +307,13 @@ export default function BlogListing() {
                       {post.tags.length > 0 && (
                         <div className="flex flex-wrap gap-2 mb-4">
                           {post.tags.slice(0, 3).map((tag, tagIndex) => (
-                            <span
+                            <button
                               key={tagIndex}
-                              className="inline-block bg-gray-100 text-gray-700 text-xs px-2 py-1 rounded hover:bg-gray-200 transition-colors"
+                              onClick={() => handleSearchChange(tag)}
+                              className="inline-block bg-gray-100 text-gray-700 text-xs px-2 py-1 rounded hover:bg-gray-200 transition-colors cursor-pointer"
                             >
                               #{tag}
-                            </span>
+                            </button>
                           ))}
                           {post.tags.length > 3 && (
                             <span className="text-xs text-gray-500">
@@ -273,16 +344,16 @@ export default function BlogListing() {
               ))}
             </div>
 
-            {/* AdSense Ad Space - Large Rectangle */}
+            {/* AdSense Ad - Large Rectangle */}
             {currentPosts.length > 6 && (
               <div className="bg-gray-100 py-8 mt-12 rounded-lg">
                 <div className="text-center">
-                  <div className="bg-white rounded-lg p-6 shadow-sm inline-block">
-                    {/* AdSense Large Rectangle Ad (336x280) will go here */}
-                    <div className="h-72 w-80 bg-gray-200 rounded flex items-center justify-center text-gray-500 text-sm">
-                      Advertisement Space (336x280)
-                    </div>
-                  </div>
+                  <SimpleAdSenseAd
+                    width={336}
+                    height={280}
+                    format="rectangle"
+                    className="mx-auto"
+                  />
                 </div>
               </div>
             )}
@@ -332,7 +403,7 @@ export default function BlogListing() {
         {/* Related Categories */}
         <section className="mt-20 bg-white rounded-lg shadow-lg p-8">
           <h3 className="text-2xl font-bold text-gray-900 mb-6 text-center">Explore More Topics</h3>
-          <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
             {categories.slice(1).map((category) => (
               <button
                 key={category}
@@ -351,23 +422,37 @@ export default function BlogListing() {
         </section>
 
         {/* Newsletter Signup */}
-        <section className="mt-20 bg-gradient-to-r from-blue-600 to-purple-600 rounded-2xl p-12 text-center">
-          <h3 className="text-3xl font-bold text-white mb-4">Never Miss an Update</h3>
-          <p className="text-xl text-blue-100 mb-8">
+        <section className="mt-20 bg-gradient-to-r from-blue-600 to-purple-600 rounded-2xl p-8 sm:p-12 text-center">
+          <h3 className="text-2xl sm:text-3xl font-bold text-white mb-4">Never Miss an Update</h3>
+          <p className="text-lg sm:text-xl text-blue-100 mb-6 sm:mb-8">
             Get the latest AI insights and tool recommendations delivered to your inbox
           </p>
           
           <div className="max-w-md mx-auto">
-            <div className="flex gap-4">
+            <form onSubmit={handleNewsletterSubmit} className="flex flex-col sm:flex-row gap-4 mb-4">
               <input
                 type="email"
                 placeholder="Enter your email"
+                value={emailSubscription}
+                onChange={(e) => setEmailSubscription(e.target.value)}
+                required
                 className="flex-1 px-4 py-3 rounded-lg border border-white/20 bg-white/10 backdrop-blur-sm text-white placeholder-blue-200 focus:outline-none focus:ring-2 focus:ring-white/50"
               />
-              <button className="bg-white text-blue-600 px-6 py-3 rounded-lg hover:bg-blue-50 transition-colors font-semibold">
-                Subscribe
+              <button 
+                type="submit"
+                disabled={subscriptionStatus === 'loading'}
+                className="bg-white text-blue-600 px-6 py-3 rounded-lg hover:bg-blue-50 transition-colors font-semibold disabled:opacity-50"
+              >
+                {subscriptionStatus === 'loading' ? 'Subscribing...' : 'Subscribe'}
               </button>
-            </div>
+            </form>
+            
+            {subscriptionStatus === 'success' && (
+              <p className="text-green-200 text-sm">✅ Successfully subscribed!</p>
+            )}
+            {subscriptionStatus === 'error' && (
+              <p className="text-red-200 text-sm">❌ Subscription failed. Please try again.</p>
+            )}
           </div>
         </section>
       </main>

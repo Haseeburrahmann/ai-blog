@@ -44,8 +44,11 @@ export default function Navigation({ className = '' }: NavigationProps) {
 
   const navItems = [
     { href: '/', label: 'Home' },
-    { href: '/blog', label: 'Blog' },
-    { href: '/tools', label: 'AI Tools' },
+    { href: '/news', label: 'All News' },
+    { href: '/news?category=World', label: 'World' },
+    { href: '/news?category=Business', label: 'Business' },
+    { href: '/news?category=Technology', label: 'Technology' },
+    { href: '/news?category=Sports', label: 'Sports' },
     { href: '/about', label: 'About' },
     { href: '/contact', label: 'Contact' }
   ]
@@ -63,10 +66,10 @@ export default function Navigation({ className = '' }: NavigationProps) {
             {/* Logo */}
             <Link href="/" className="flex items-center" onClick={closeMobileMenu}>
               <div className="flex items-center space-x-2">
-                <div className="w-8 h-8 bg-gradient-to-br from-blue-600 to-purple-600 rounded-lg flex items-center justify-center">
-                  <span className="text-white font-bold text-sm">AI</span>
+                <div className="w-8 h-8 bg-gradient-to-br from-red-600 to-orange-600 rounded-lg flex items-center justify-center">
+                  <span className="text-white font-bold text-sm">WN</span>
                 </div>
-                <h1 className="text-xl md:text-2xl font-bold text-gray-900">AI Insights</h1>
+                <h1 className="text-xl md:text-2xl font-bold text-gray-900">World News</h1>
               </div>
             </Link>
 
@@ -119,10 +122,10 @@ export default function Navigation({ className = '' }: NavigationProps) {
           {/* Mobile menu header */}
           <div className="flex items-center justify-between p-4 border-b border-gray-200">
             <div className="flex items-center space-x-2">
-              <div className="w-8 h-8 bg-gradient-to-br from-blue-600 to-purple-600 rounded-lg flex items-center justify-center">
-                <span className="text-white font-bold text-sm">AI</span>
+              <div className="w-8 h-8 bg-gradient-to-br from-red-600 to-orange-600 rounded-lg flex items-center justify-center">
+                <span className="text-white font-bold text-sm">WN</span>
               </div>
-              <span className="text-lg font-bold text-gray-900">AI Insights</span>
+              <span className="text-lg font-bold text-gray-900">World News</span>
             </div>
             <button
               onClick={closeMobileMenu}
@@ -164,7 +167,7 @@ export default function Navigation({ className = '' }: NavigationProps) {
             </Link>
             <div className="mt-4 text-center">
               <p className="text-sm text-gray-500">
-                © 2025 AI Insights
+                © 2025 World News Network
               </p>
             </div>
           </div>

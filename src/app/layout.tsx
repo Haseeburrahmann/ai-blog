@@ -8,25 +8,30 @@ const inter = Inter({ subsets: ['latin'] })
 
 export const metadata: Metadata = {
   title: {
-    default: 'AI Insights - Latest AI Tools, News & Reviews 2025',
-    template: '%s | AI Insights'
+    default: 'World News Network - Breaking News, Latest Updates & Headlines 2025',
+    template: '%s | World News Network'
   },
-  description: 'Discover the best AI tools, latest artificial intelligence news, and expert reviews. Your trusted source for AI technology insights, tutorials, and industry analysis.',
+  description: 'Stay informed with breaking news, latest updates, and in-depth coverage from around the world. World News Network delivers verified news from trusted sources across Politics, Business, Technology, Sports, Health, Science, and Entertainment.',
   keywords: [
-    'AI tools',
-    'artificial intelligence',
-    'machine learning',
-    'AI news',
-    'ChatGPT',
-    'AI reviews',
-    'tech news',
-    'AI tutorials',
-    'automation tools',
-    'AI trends 2025'
+    'world news',
+    'breaking news',
+    'latest news',
+    'news headlines',
+    'global news',
+    'international news',
+    'business news',
+    'technology news',
+    'sports news',
+    'political news',
+    'health news',
+    'entertainment news',
+    'science news',
+    'news updates 2025',
+    'current events'
   ],
-  authors: [{ name: 'AI Insights Team' }],
-  creator: 'AI Insights',
-  publisher: 'AI Insights',
+  authors: [{ name: 'World News Network Editorial Team' }],
+  creator: 'World News Network',
+  publisher: 'World News Network',
   robots: {
     index: true,
     follow: true,
@@ -42,32 +47,32 @@ export const metadata: Metadata = {
     type: 'website',
     locale: 'en_US',
     url: 'https://mindfulblogai.com',
-    siteName: 'AI Insights',
-    title: 'AI Insights - Latest AI Tools & Technology News',
-    description: 'Discover cutting-edge AI tools, stay updated with the latest artificial intelligence news, and explore comprehensive reviews from industry experts.',
+    siteName: 'World News Network',
+    title: 'World News Network - Breaking News & Latest Headlines',
+    description: 'Stay informed with breaking news, latest updates, and comprehensive coverage from around the globe. Your trusted source for verified news 24/7.',
     images: [
       {
         url: '/og-image.jpg',
         width: 1200,
         height: 630,
-        alt: 'AI Insights - Your Source for AI News and Tools',
+        alt: 'World News Network - Your Source for Breaking News',
       },
     ],
   },
   twitter: {
     card: 'summary_large_image',
-    title: 'AI Insights - Latest AI Tools & Technology News',
-    description: 'Discover cutting-edge AI tools, stay updated with the latest artificial intelligence news, and explore comprehensive reviews from industry experts.',
+    title: 'World News Network - Breaking News & Latest Headlines',
+    description: 'Stay informed with breaking news, latest updates, and comprehensive coverage from around the globe. Your trusted source for verified news 24/7.',
     images: ['/twitter-image.jpg'],
-    creator: '@aiinsights',
+    creator: '@worldnewsnet',
   },
   verification: {
-    google: 'your-google-verification-code', // Add your actual verification code
+    google: 'your-google-verification-code',
   },
   alternates: {
     canonical: 'https://mindfulblogai.com',
   },
-  category: 'technology',
+  category: 'news',
 }
 
 export default function RootLayout({
@@ -83,28 +88,28 @@ export default function RootLayout({
         
         {/* Additional SEO Meta Tags */}
         <link rel="canonical" href="https://mindfulblogai.com" />
-        <meta name="theme-color" content="#2563eb" />
+        <meta name="theme-color" content="#dc2626" />
         <meta name="apple-mobile-web-app-capable" content="yes" />
         <meta name="apple-mobile-web-app-status-bar-style" content="default" />
-        
+
         {/* Structured Data */}
         <script
           type="application/ld+json"
           dangerouslySetInnerHTML={{
             __html: JSON.stringify({
               '@context': 'https://schema.org',
-              '@type': 'WebSite',
-              name: 'AI Insights',
+              '@type': 'NewsMediaOrganization',
+              name: 'World News Network',
               url: 'https://mindfulblogai.com',
-              description: 'Your trusted source for AI news, tool reviews, and industry analysis',
+              description: 'Breaking news, latest updates, and comprehensive coverage from around the world',
               potentialAction: {
                 '@type': 'SearchAction',
-                target: 'https://mindfulblogai.com/blog?q={search_term_string}',
+                target: 'https://mindfulblogai.com/news?q={search_term_string}',
                 'query-input': 'required name=search_term_string'
               },
               publisher: {
                 '@type': 'Organization',
-                name: 'AI Insights',
+                name: 'World News Network',
                 url: 'https://mindfulblogai.com',
                 logo: {
                   '@type': 'ImageObject',

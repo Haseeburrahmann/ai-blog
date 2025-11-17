@@ -13,7 +13,7 @@ export async function GET(request: Request) {
     const featured = searchParams.get('featured')
     const limit = parseInt(searchParams.get('limit') || '20')
 
-    let query: any = { published: true }
+    const query: Record<string, unknown> = { published: true }
 
     if (category && category !== 'all') {
       query.category = category
@@ -35,7 +35,7 @@ export async function GET(request: Request) {
       articles,
       count: articles.length
     })
-  } catch (error: any) {
+  } catch (error: unknown) {
     console.error('Error fetching news articles:', error)
     return NextResponse.json(
       { success: false, error: 'Failed to fetch news articles' },

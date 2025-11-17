@@ -25,7 +25,7 @@ export async function GET() {
       featuredArticles,
       totalViews: totalViews[0]?.total || 0
     })
-  } catch (error: any) {
+  } catch (error: unknown) {
     console.error('Error fetching admin stats:', error)
 
     return NextResponse.json({

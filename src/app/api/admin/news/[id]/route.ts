@@ -65,10 +65,10 @@ export async function PUT(request: Request, { params }: RouteParams) {
         published: article.published
       }
     })
-  } catch (error: any) {
+  } catch (error: unknown) {
     console.error('Error updating news article:', error)
 
-    if (error.code === 11000) {
+    if (error && typeof error === 'object' && 'code' in error && error.code === 11000) {
       return NextResponse.json(
         { error: 'An article with this title already exists. Please choose a different title.' },
         { status: 400 }
@@ -100,7 +100,7 @@ export async function DELETE(request: Request, { params }: RouteParams) {
       success: true,
       message: 'News article deleted successfully!'
     })
-  } catch (error: any) {
+  } catch (error: unknown) {
     console.error('Error deleting news article:', error)
 
     return NextResponse.json(
@@ -128,7 +128,7 @@ export async function GET(request: Request, { params }: RouteParams) {
       success: true,
       article
     })
-  } catch (error: any) {
+  } catch (error: unknown) {
     console.error('Error fetching news article:', error)
 
     return NextResponse.json(

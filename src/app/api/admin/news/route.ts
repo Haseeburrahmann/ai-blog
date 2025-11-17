@@ -59,10 +59,10 @@ export async function POST(request: Request) {
         published: newsArticle.published
       }
     })
-  } catch (error: any) {
+  } catch (error: unknown) {
     console.error('Error creating news article:', error)
 
-    if (error.code === 11000) {
+    if (error && typeof error === 'object' && 'code' in error && error.code === 11000) {
       return NextResponse.json({
         error: 'An article with this title already exists. Please choose a different title.'
       }, { status: 400 })
@@ -87,7 +87,7 @@ export async function GET() {
       success: true,
       articles
     })
-  } catch (error: any) {
+  } catch (error: unknown) {
     console.error('Error fetching news articles:', error)
 
     return NextResponse.json({

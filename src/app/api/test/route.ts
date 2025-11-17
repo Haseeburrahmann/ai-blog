@@ -20,13 +20,13 @@ export async function GET() {
         timestamp: new Date().toISOString()
       }
     })
-  } catch (error: any) {
+  } catch (error: unknown) {
     console.error('Database connection error:', error)
 
     return NextResponse.json({
       success: false,
       message: 'Database connection failed',
-      error: process.env.NODE_ENV === 'development' ? error.message : 'Internal server error'
+      error: process.env.NODE_ENV === 'development' ? (error instanceof Error ? error.message : 'Unknown error') : 'Internal server error'
     }, { status: 500 })
   }
 }

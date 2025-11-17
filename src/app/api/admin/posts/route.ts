@@ -71,7 +71,7 @@ export async function GET() {
       success: true,
       posts: articles // Keep 'posts' for backward compatibility
     })
-  } catch (error: any) {
+  } catch (error: unknown) {
     console.error('Error fetching articles:', error)
 
     return NextResponse.json({

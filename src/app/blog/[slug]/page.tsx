@@ -1,7 +1,7 @@
 import { notFound } from 'next/navigation'
 import Link from 'next/link'
 import connectDB from '@/lib/mongodb'
-import BlogPost from '@/models/BlogPost'
+import NewsArticle from '@/models/NewsArticle'
 
 interface BlogPostPageProps {
   params: Promise<{
@@ -12,28 +12,28 @@ interface BlogPostPageProps {
 async function getBlogPost(slug: string) {
   try {
     await connectDB()
-    
-    const post = await BlogPost.findOne({ 
-      slug, 
-      published: true 
-    }).select('title content excerpt category tags publishedAt readTime author')
-    
-    if (!post) {
+
+    const article = await NewsArticle.findOne({
+      slug,
+      published: true
+    }).select('title content description category tags publishedAt readTime author')
+
+    if (!article) {
       return null
     }
-    
+
     return {
-      title: post.title,
-      content: post.content,
-      excerpt: post.excerpt,
-      category: post.category,
-      tags: post.tags,
-      publishedAt: post.publishedAt?.toISOString(),
-      readTime: post.readTime,
-      author: post.author
+      title: article.title,
+      content: article.content,
+      excerpt: article.description, // Map description to excerpt for compatibility
+      category: article.category,
+      tags: article.tags,
+      publishedAt: article.publishedAt?.toISOString(),
+      readTime: article.readTime,
+      author: article.author
     }
   } catch (error) {
-    console.error('Error fetching blog post:', error)
+    console.error('Error fetching article:', error)
     return null
   }
 }

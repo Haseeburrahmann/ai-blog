@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { NextResponse } from 'next/server'
 import connectDB from '@/lib/mongodb'
-import BlogPost from '@/models/BlogPost'
+import NewsArticle from '@/models/NewsArticle'
 
 interface RouteParams {
   params: Promise<{
@@ -16,7 +16,7 @@ export async function DELETE(request: Request, { params }: RouteParams) {
     const { id } = await params
 
     // Find and delete the post
-    const deletedPost = await BlogPost.findByIdAndDelete(id)
+    const deletedPost = await NewsArticle.findByIdAndDelete(id)
 
     if (!deletedPost) {
       return NextResponse.json({
@@ -49,7 +49,7 @@ export async function PATCH(request: Request, { params }: RouteParams) {
     const body = await request.json()
 
     // Find and update the post
-    const updatedPost = await BlogPost.findByIdAndUpdate(
+    const updatedPost = await NewsArticle.findByIdAndUpdate(
       id,
       body,
       { new: true, runValidators: true }
@@ -87,7 +87,7 @@ export async function GET(request: Request, { params }: RouteParams) {
     const { id } = await params
 
     // Find the post by ID
-    const post = await BlogPost.findById(id)
+    const post = await NewsArticle.findById(id)
 
     if (!post) {
       return NextResponse.json({

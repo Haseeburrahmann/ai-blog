@@ -6,7 +6,8 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "next lint"
+    "lint": "next lint",
+    "seed-news": "node scripts/seed-news.js"
   },
   "dependencies": {
     "critters": "^0.0.23",

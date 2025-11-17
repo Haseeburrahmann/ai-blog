@@ -1,6 +1,6 @@
 import { NextResponse } from 'next/server'
 import connectDB from '@/lib/mongodb'
-import BlogPost from '@/models/BlogPost'
+import NewsArticle from '@/models/NewsArticle'
 
 export async function POST(request: Request) {
   try {
@@ -16,12 +16,12 @@ export async function POST(request: Request) {
       .replace(/[\s_-]+/g, '-')
       .replace(/^-+|-+$/g, '')
 
-    // Create new blog post
-    const blogPost = new BlogPost({
+    // Create new news article (backward compatibility endpoint)
+    const newsArticle = new NewsArticle({
       title,
       slug,
       content,
-      excerpt,
+      description: excerpt, // Map excerpt to description
       category,
       tags,
       published,
@@ -29,16 +29,16 @@ export async function POST(request: Request) {
       publishedAt: published ? new Date() : null
     })
 
-    await blogPost.save()
+    await newsArticle.save()
 
     return NextResponse.json({
       success: true,
-      message: published ? 'Blog post published successfully!' : 'Blog post saved as draft!',
+      message: published ? 'Article published successfully!' : 'Article saved as draft!',
       post: {
-        id: blogPost._id,
-        title: blogPost.title,
-        slug: blogPost.slug,
-        published: blogPost.published
+        id: newsArticle._id,
+        title: newsArticle.title,
+        slug: newsArticle.slug,
+        published: newsArticle.published
       }
     })
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -61,22 +61,21 @@ export async function POST(request: Request) {
 export async function GET() {
   try {
     await connectDB()
-    
-    const posts = await BlogPost.find()
+
+    const articles = await NewsArticle.find()
       .sort({ createdAt: -1 })
-      .select('title slug excerpt category tags published publishedAt createdAt readTime')
+      .select('title slug description category tags published publishedAt createdAt readTime')
       .limit(50)
 
     return NextResponse.json({
       success: true,
-      posts
+      posts: articles // Keep 'posts' for backward compatibility
     })
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   } catch (error: any) {
-    console.error('Error fetching blog posts:', error)
-    
+    console.error('Error fetching articles:', error)
+
     return NextResponse.json({
-      error: 'Failed to fetch blog posts'
+      error: 'Failed to fetch articles'
     }, { status: 500 })
   }
 }

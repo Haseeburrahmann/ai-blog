@@ -1,30 +1,28 @@
 import { NextResponse } from 'next/server'
 import connectDB from '@/lib/mongodb'
-import BlogPost from '@/models/BlogPost'
-import AITool from '@/models/AITool'
+import NewsArticle from '@/models/NewsArticle'
 
 export async function GET() {
   try {
     // Connect to database
     await connectDB()
-    
+
     // Test database operations
-    const blogPostCount = await BlogPost.countDocuments()
-    const aiToolCount = await AITool.countDocuments()
-    
+    const newsArticleCount = await NewsArticle.countDocuments()
+    const publishedCount = await NewsArticle.countDocuments({ published: true })
+
     return NextResponse.json({
       success: true,
       message: 'Database connection successful!',
       data: {
-        blogPosts: blogPostCount,
-        aiTools: aiToolCount,
+        newsArticles: newsArticleCount,
+        publishedArticles: publishedCount,
         timestamp: new Date().toISOString()
       }
     })
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   } catch (error: any) {
     console.error('Database connection error:', error)
-    
+
     return NextResponse.json({
       success: false,
       message: 'Database connection failed',

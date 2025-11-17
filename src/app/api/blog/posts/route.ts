@@ -1,27 +1,26 @@
 import { NextResponse } from 'next/server'
 import connectDB from '@/lib/mongodb'
-import BlogPost from '@/models/BlogPost'
+import NewsArticle from '@/models/NewsArticle'
 
 export async function GET() {
   try {
     await connectDB()
-    
-    // Only fetch published posts for public view
-    const posts = await BlogPost.find({ published: true })
+
+    // Redirect to news API - keeping this for backward compatibility
+    const articles = await NewsArticle.find({ published: true })
       .sort({ publishedAt: -1 })
-      .select('title slug excerpt category tags publishedAt readTime')
+      .select('title slug description category tags publishedAt readTime')
       .limit(50)
 
     return NextResponse.json({
       success: true,
-      posts
+      posts: articles // Keep 'posts' key for backward compatibility
     })
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   } catch (error: any) {
-    console.error('Error fetching public blog posts:', error)
-    
+    console.error('Error fetching articles:', error)
+
     return NextResponse.json({
-      error: 'Failed to fetch blog posts'
+      error: 'Failed to fetch articles'
     }, { status: 500 })
   }
 }

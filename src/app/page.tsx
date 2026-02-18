@@ -1,346 +1,319 @@
-'use client';
-
-import { useEffect, useState } from 'react';
 import Link from 'next/link';
-import { Sparkles, ArrowRight, Star, TrendingUp, Zap } from 'lucide-react';
-import AdSenseAd from '@/components/AdSenseAd';
+import {
+  ArrowRight, BookOpen, Wrench, Sparkles, Users, Newspaper,
+  TrendingUp, Zap, Shield,
+} from 'lucide-react';
+import connectDB from '@/lib/mongodb';
+import BlogPost from '@/models/BlogPost';
+import Tool from '@/models/Tool';
+import { serializeDoc, formatDate } from '@/lib/utils';
+import Badge from '@/components/ui/Badge';
+import NewsletterForm from '@/components/ui/NewsletterForm';
+import AdBanner from '@/components/ads/AdBanner';
+import { BLOG_CATEGORIES } from '@/lib/constants';
+import type { BlogPostData, ToolData } from '@/types';
 
-interface AITool {
-  _id: string;
-  name: string;
-  slug: string;
-  shortDescription: string;
-  logo: string;
-  category: string;
-  pricing: {
-    model: string;
-    hasFreeTier: boolean;
-  };
-  rating: {
-    overall: number;
-  };
+export const revalidate = 3600;
+
+async function getData() {
+  try {
+    await connectDB();
+
+    const [featuredPosts, latestPosts, featuredTools] = await Promise.all([
+      BlogPost.find({ published: true, featured: true })
+        .sort({ publishedAt: -1 })
+        .limit(3)
+        .select('title slug excerpt category featuredImage publishedAt readingTime')
+        .lean(),
+      BlogPost.find({ published: true })
+        .sort({ publishedAt: -1 })
+        .limit(6)
+        .select('title slug excerpt category featuredImage publishedAt readingTime tags')
+        .lean(),
+      Tool.find({ published: true, featured: true })
+        .limit(6)
+        .select('name slug shortDescription category icon')
+        .lean(),
+    ]);
+
+    return {
+      featuredPosts: serializeDoc<BlogPostData[]>(featuredPosts),
+      latestPosts: serializeDoc<BlogPostData[]>(latestPosts),
+      featuredTools: serializeDoc<ToolData[]>(featuredTools),
+    };
+  } catch {
+    return { featuredPosts: [], latestPosts: [], featuredTools: [] };
+  }
 }
 
-const categories = [
-  { name: 'Writing', icon: '✍️', count: 45 },
-  { name: 'Coding', icon: '💻', count: 32 },
-  { name: 'Image', icon: '🎨', count: 28 },
-  { name: 'Video', icon: '🎬', count: 24 },
-  { name: 'Audio', icon: '🎵', count: 18 },
-  { name: 'Chatbot', icon: '💬', count: 15 },
-  { name: 'Automation', icon: '⚡', count: 22 },
-  { name: 'Productivity', icon: '📊', count: 35 },
-  { name: 'Design', icon: '🎭', count: 20 },
-  { name: 'Marketing', icon: '📈', count: 26 },
-  { name: 'Research', icon: '🔍', count: 14 },
-  { name: 'Customer Support', icon: '🎧', count: 16 },
-];
-
-export default function HomePage() {
-  const [featuredTools, setFeaturedTools] = useState<AITool[]>([]);
-  const [trendingTools, setTrendingTools] = useState<AITool[]>([]);
-  const [loading, setLoading] = useState(true);
-
-  useEffect(() => {
-    fetchTools();
-  }, []);
-
-  const fetchTools = async () => {
-    try {
-      const [featuredRes, trendingRes] = await Promise.all([
-        fetch('/api/tools?featured=true&limit=4'),
-        fetch('/api/tools?trending=true&limit=4'),
-      ]);
-
-      const featuredData = await featuredRes.json();
-      const trendingData = await trendingRes.json();
-
-      if (featuredData.success) setFeaturedTools(featuredData.tools);
-      if (trendingData.success) setTrendingTools(trendingData.tools);
-    } catch (error) {
-      console.error('Error fetching tools:', error);
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  const getCategoryColor = (category: string) => {
-    const colors: Record<string, string> = {
-      'Writing': 'bg-blue-100 text-blue-800',
-      'Coding': 'bg-purple-100 text-purple-800',
-      'Image': 'bg-pink-100 text-pink-800',
-      'Video': 'bg-red-100 text-red-800',
-      'Audio': 'bg-yellow-100 text-yellow-800',
-      'Chatbot': 'bg-green-100 text-green-800',
-      'Automation': 'bg-orange-100 text-orange-800',
-      'Productivity': 'bg-teal-100 text-teal-800',
-      'Design': 'bg-indigo-100 text-indigo-800',
-      'Marketing': 'bg-cyan-100 text-cyan-800',
-      'Research': 'bg-gray-100 text-gray-800',
-      'Customer Support': 'bg-lime-100 text-lime-800',
-    };
-    return colors[category] || 'bg-gray-100 text-gray-800';
-  };
-
-  const getPricingBadge = (pricing: { model: string; hasFreeTier: boolean }) => {
-    if (pricing.model === 'free') return { text: 'Free', class: 'bg-green-100 text-green-800' };
-    if (pricing.hasFreeTier) return { text: 'Freemium', class: 'bg-blue-100 text-blue-800' };
-    return { text: 'Paid', class: 'bg-purple-100 text-purple-800' };
-  };
+export default async function HomePage() {
+  const { featuredPosts, latestPosts, featuredTools } = await getData();
 
   return (
-    <div className="min-h-screen">
-      {/* Hero Section */}
-      <section className="relative bg-gradient-to-br from-indigo-900 via-purple-900 to-indigo-800 text-white py-20 lg:py-32">
-        <div className="absolute inset-0 bg-[url('/grid.svg')] opacity-10"></div>
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative">
+    <>
+      {/* Hero */}
+      <section className="relative overflow-hidden bg-gradient-to-br from-indigo-50 via-white to-purple-50 dark:from-gray-950 dark:via-gray-950 dark:to-indigo-950/30">
+        <div className="absolute inset-0 bg-[url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNjAiIGhlaWdodD0iNjAiIHZpZXdCb3g9IjAgMCA2MCA2MCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48ZyBmaWxsPSJub25lIiBmaWxsLXJ1bGU9ImV2ZW5vZGQiPjxnIGZpbGw9IiM2MzY2ZjEiIGZpbGwtb3BhY2l0eT0iMC4wMyI+PGNpcmNsZSBjeD0iMzAiIGN5PSIzMCIgcj0iMiIvPjwvZz48L2c+PC9zdmc+')] opacity-60" />
+        <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-20 sm:py-28 lg:py-36">
           <div className="text-center max-w-3xl mx-auto">
-            <div className="inline-flex items-center gap-2 bg-white/10 backdrop-blur-sm rounded-full px-4 py-2 mb-8">
-              <Sparkles className="w-4 h-4 text-yellow-400" />
-              <span className="text-sm font-medium">Discover 300+ AI Tools</span>
+            <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-indigo-100 dark:bg-indigo-900/30 text-indigo-700 dark:text-indigo-300 text-sm font-medium mb-6">
+              <Sparkles size={16} />
+              AI Insights & Free Tools
             </div>
-            <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold mb-6 leading-tight">
-              Find the Perfect{' '}
-              <span className="text-transparent bg-clip-text bg-gradient-to-r from-yellow-400 to-orange-400">
-                AI Tool
-              </span>{' '}
-              for Your Needs
+            <h1 className="text-4xl sm:text-5xl lg:text-6xl font-bold text-gray-900 dark:text-white tracking-tight leading-tight">
+              Your AI Knowledge Hub{' '}
+              <span className="gradient-text">& Toolkit</span>
             </h1>
-            <p className="text-lg md:text-xl text-indigo-100 mb-10 max-w-2xl mx-auto">
-              Compare AI tools for writing, coding, image generation, video creation, and more. 
-              Expert reviews, side-by-side comparisons, and exclusive deals.
+            <p className="mt-6 text-lg sm:text-xl text-gray-600 dark:text-gray-400 leading-relaxed">
+              In-depth articles, expert reviews, and free browser-based tools to help you
+              navigate the AI landscape and boost your productivity.
             </p>
-            <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
-              <Link href="/categories" className="btn-primary bg-white text-indigo-900 hover:bg-gray-100 w-full sm:w-auto">
-                Browse All Tools
-                <ArrowRight className="w-5 h-5 ml-2" />
+            <div className="mt-10 flex flex-col sm:flex-row items-center justify-center gap-4">
+              <Link href="/blog" className="btn-primary text-lg px-8 py-4">
+                <BookOpen size={20} className="mr-2" />
+                Read the Blog
               </Link>
-              <Link href="/comparisons" className="btn-secondary bg-white/10 text-white border-white/20 hover:bg-white/20 w-full sm:w-auto">
-                Compare Tools
+              <Link href="/tools" className="btn-secondary text-lg px-8 py-4">
+                <Wrench size={20} className="mr-2" />
+                Try Free Tools
               </Link>
             </div>
           </div>
         </div>
-        
-        {/* Stats Bar */}
-        <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 mt-16">
-          <div className="bg-white/10 backdrop-blur-md rounded-2xl p-6 grid grid-cols-2 md:grid-cols-4 gap-6">
+      </section>
+
+      {/* Trust Signals */}
+      <section className="border-b border-gray-200 dark:border-gray-800 bg-white dark:bg-gray-950">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-8">
             {[
-              { value: '300+', label: 'AI Tools' },
-              { value: '12', label: 'Categories' },
-              { value: '50+', label: 'Comparisons' },
-              { value: '10K+', label: 'Monthly Users' },
-            ].map((stat) => (
-              <div key={stat.label} className="text-center">
-                <div className="text-2xl md:text-3xl font-bold text-white">{stat.value}</div>
-                <div className="text-indigo-200 text-sm">{stat.label}</div>
+              { icon: Newspaper, label: 'Expert Articles', value: 'In-Depth' },
+              { icon: Wrench, label: 'Free AI Tools', value: '10+' },
+              { icon: Zap, label: 'Weekly Insights', value: 'Fresh' },
+              { icon: Shield, label: 'Honest Reviews', value: 'Unbiased' },
+            ].map(({ icon: Icon, label, value }) => (
+              <div key={label} className="text-center">
+                <div className="inline-flex items-center justify-center w-12 h-12 rounded-xl bg-indigo-50 dark:bg-indigo-900/20 text-indigo-600 dark:text-indigo-400 mb-3">
+                  <Icon size={24} />
+                </div>
+                <p className="text-2xl font-bold text-gray-900 dark:text-white">{value}</p>
+                <p className="text-sm text-gray-500 dark:text-gray-400">{label}</p>
               </div>
             ))}
           </div>
         </div>
       </section>
 
-      {/* Categories Section */}
-      <section className="py-16 bg-white">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="text-center mb-12">
-            <h2 className="text-3xl font-bold text-gray-900 mb-4">Browse by Category</h2>
-            <p className="text-gray-600 max-w-2xl mx-auto">
-              Explore AI tools organized by use case. Find exactly what you need.
-            </p>
-          </div>
-          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
-            {categories.map((category) => (
-              <Link
-                key={category.name}
-                href={`/categories/${category.name.toLowerCase().replace(/\s+/g, '-')}`}
-                className="group p-6 rounded-xl border border-gray-200 hover:border-indigo-300 hover:shadow-lg transition-all bg-white"
-              >
-                <div className="text-3xl mb-3">{category.icon}</div>
-                <h3 className="font-semibold text-gray-900 group-hover:text-indigo-600 transition-colors">
-                  {category.name}
-                </h3>
-                <p className="text-sm text-gray-500">{category.count} tools</p>
+      {/* Featured Blog Posts */}
+      {featuredPosts.length > 0 && (
+        <section className="section-padding bg-white dark:bg-gray-950">
+          <div className="container-wide">
+            <div className="flex items-center justify-between mb-10">
+              <div>
+                <h2 className="text-3xl font-bold text-gray-900 dark:text-white">
+                  Featured Articles
+                </h2>
+                <p className="mt-2 text-gray-600 dark:text-gray-400">
+                  Our most impactful insights on AI
+                </p>
+              </div>
+              <Link href="/blog" className="hidden sm:flex items-center gap-1 text-indigo-600 dark:text-indigo-400 font-medium hover:gap-2 transition-all">
+                View all <ArrowRight size={16} />
               </Link>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      {/* Featured Tools */}
-      <section className="py-16 bg-gray-50">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex items-center justify-between mb-8">
-            <div>
-              <h2 className="text-3xl font-bold text-gray-900 flex items-center gap-2">
-                <Star className="w-7 h-7 text-yellow-500" />
-                Featured Tools
-              </h2>
-              <p className="text-gray-600 mt-2">Hand-picked best AI tools in each category</p>
             </div>
-            <Link href="/categories" className="hidden md:flex items-center text-indigo-600 hover:text-indigo-700 font-medium">
-              View All
-              <ArrowRight className="w-4 h-4 ml-1" />
+            <div className="grid md:grid-cols-3 gap-8">
+              {featuredPosts.map((post) => (
+                <Link key={post._id} href={`/blog/${post.slug}`} className="card card-hover group">
+                  <div className="h-48 bg-gradient-to-br from-indigo-100 to-purple-100 dark:from-indigo-900/20 dark:to-purple-900/20" />
+                  <div className="p-6">
+                    <CategoryBadge category={post.category} />
+                    <h3 className="mt-3 text-lg font-semibold text-gray-900 dark:text-white group-hover:text-indigo-600 dark:group-hover:text-indigo-400 transition-colors line-clamp-2">
+                      {post.title}
+                    </h3>
+                    <p className="mt-2 text-sm text-gray-600 dark:text-gray-400 line-clamp-2">
+                      {post.excerpt}
+                    </p>
+                    <div className="mt-4 flex items-center gap-3 text-xs text-gray-500 dark:text-gray-500">
+                      <span>{formatDate(post.publishedAt)}</span>
+                      <span>&middot;</span>
+                      <span>{post.readingTime} min read</span>
+                    </div>
+                  </div>
+                </Link>
+              ))}
+            </div>
+            <Link href="/blog" className="sm:hidden flex items-center justify-center gap-1 mt-6 text-indigo-600 dark:text-indigo-400 font-medium">
+              View all articles <ArrowRight size={16} />
             </Link>
           </div>
-
-          {loading ? (
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-              {[...Array(4)].map((_, i) => (
-                <div key={i} className="card h-64 animate-pulse bg-gray-200" />
-              ))}
-            </div>
-          ) : (
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-              {featuredTools.map((tool) => (
-                <Link key={tool._id} href={`/tools/${tool.slug}`} className="card card-hover group">
-                  <div className="p-6">
-                    <div className="flex items-start justify-between mb-4">
-                      <img src={tool.logo} alt={tool.name} className="w-12 h-12 rounded-lg object-cover" />
-                      <div className={`badge ${getCategoryColor(tool.category)}`}>
-                        {tool.category}
-                      </div>
-                    </div>
-                    <h3 className="font-bold text-gray-900 mb-2 group-hover:text-indigo-600 transition-colors">
-                      {tool.name}
-                    </h3>
-                    <p className="text-sm text-gray-600 mb-4 line-clamp-2">{tool.shortDescription}</p>
-                    <div className="flex items-center justify-between">
-                      <div className="flex items-center gap-1">
-                        <Star className="w-4 h-4 text-yellow-400 fill-yellow-400" />
-                        <span className="font-medium">{tool.rating.overall.toFixed(1)}</span>
-                      </div>
-                      <span className={`badge ${getPricingBadge(tool.pricing).class} text-xs`}>
-                        {getPricingBadge(tool.pricing).text}
-                      </span>
-                    </div>
-                  </div>
-                </Link>
-              ))}
-            </div>
-          )}
-        </div>
-      </section>
+        </section>
+      )}
 
       {/* Ad Banner */}
-      <section className="py-8 bg-gray-50">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex justify-center">
-            <AdSenseAd format="leaderboard" className="w-full max-w-[728px]" />
+      <AdBanner className="py-6 bg-gray-50 dark:bg-gray-900" />
+
+      {/* Free Tools */}
+      <section className="section-padding bg-gray-50 dark:bg-gray-900">
+        <div className="container-wide">
+          <div className="flex items-center justify-between mb-10">
+            <div>
+              <h2 className="text-3xl font-bold text-gray-900 dark:text-white">
+                Free AI Tools
+              </h2>
+              <p className="mt-2 text-gray-600 dark:text-gray-400">
+                Powerful browser-based tools, no signup required
+              </p>
+            </div>
+            <Link href="/tools" className="hidden sm:flex items-center gap-1 text-indigo-600 dark:text-indigo-400 font-medium hover:gap-2 transition-all">
+              All tools <ArrowRight size={16} />
+            </Link>
           </div>
+          <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
+            {featuredTools.length > 0
+              ? featuredTools.map((tool) => (
+                  <Link key={tool._id} href={`/tools/${tool.slug}`} className="card card-hover p-6 group">
+                    <div className="w-12 h-12 rounded-xl bg-indigo-50 dark:bg-indigo-900/20 text-indigo-600 dark:text-indigo-400 flex items-center justify-center mb-4">
+                      <Wrench size={24} />
+                    </div>
+                    <h3 className="text-lg font-semibold text-gray-900 dark:text-white group-hover:text-indigo-600 dark:group-hover:text-indigo-400 transition-colors">
+                      {tool.name}
+                    </h3>
+                    <p className="mt-2 text-sm text-gray-600 dark:text-gray-400">
+                      {tool.shortDescription}
+                    </p>
+                    <span className="inline-flex items-center gap-1 mt-4 text-sm text-indigo-600 dark:text-indigo-400 font-medium">
+                      Try it free <ArrowRight size={14} />
+                    </span>
+                  </Link>
+                ))
+              : /* Placeholder tools when DB is empty */
+                [
+                  { name: 'Word Counter', desc: 'Count words, characters, sentences and estimate reading time', slug: 'word-counter' },
+                  { name: 'JSON Formatter', desc: 'Format, validate and beautify your JSON data instantly', slug: 'json-formatter' },
+                  { name: 'Password Generator', desc: 'Generate strong, secure passwords with custom options', slug: 'password-generator' },
+                ].map((tool) => (
+                  <Link key={tool.slug} href={`/tools/${tool.slug}`} className="card card-hover p-6 group">
+                    <div className="w-12 h-12 rounded-xl bg-indigo-50 dark:bg-indigo-900/20 text-indigo-600 dark:text-indigo-400 flex items-center justify-center mb-4">
+                      <Wrench size={24} />
+                    </div>
+                    <h3 className="text-lg font-semibold text-gray-900 dark:text-white group-hover:text-indigo-600 dark:group-hover:text-indigo-400 transition-colors">
+                      {tool.name}
+                    </h3>
+                    <p className="mt-2 text-sm text-gray-600 dark:text-gray-400">{tool.desc}</p>
+                    <span className="inline-flex items-center gap-1 mt-4 text-sm text-indigo-600 dark:text-indigo-400 font-medium">
+                      Try it free <ArrowRight size={14} />
+                    </span>
+                  </Link>
+                ))
+            }
+          </div>
+          <Link href="/tools" className="sm:hidden flex items-center justify-center gap-1 mt-6 text-indigo-600 dark:text-indigo-400 font-medium">
+            View all tools <ArrowRight size={16} />
+          </Link>
         </div>
       </section>
 
-      {/* Trending Tools */}
-      <section className="py-16 bg-white">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex items-center justify-between mb-8">
-            <div>
-              <h2 className="text-3xl font-bold text-gray-900 flex items-center gap-2">
-                <TrendingUp className="w-7 h-7 text-red-500" />
-                Trending Now
-              </h2>
-              <p className="text-gray-600 mt-2">Most popular AI tools this month</p>
-            </div>
+      {/* Newsletter CTA */}
+      <section className="relative overflow-hidden bg-gradient-to-r from-indigo-600 to-purple-600 dark:from-indigo-700 dark:to-purple-700">
+        <div className="absolute inset-0 bg-[url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNjAiIGhlaWdodD0iNjAiIHZpZXdCb3g9IjAgMCA2MCA2MCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48ZyBmaWxsPSJub25lIiBmaWxsLXJ1bGU9ImV2ZW5vZGQiPjxnIGZpbGw9IiNmZmYiIGZpbGwtb3BhY2l0eT0iMC4wNSI+PGNpcmNsZSBjeD0iMzAiIGN5PSIzMCIgcj0iMiIvPjwvZz48L2c+PC9zdmc+')] opacity-60" />
+        <div className="relative max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 py-16 sm:py-20 text-center">
+          <h2 className="text-3xl sm:text-4xl font-bold text-white mb-4">
+            Stay Ahead with AI Insights
+          </h2>
+          <p className="text-lg text-indigo-100 mb-8">
+            Get weekly AI news, tool reviews, and productivity tips delivered to your inbox. Join our growing community.
+          </p>
+          <div className="max-w-md mx-auto">
+            <NewsletterForm source="homepage-cta" />
           </div>
+          <p className="mt-4 text-sm text-indigo-200">
+            No spam, unsubscribe anytime. We respect your privacy.
+          </p>
+        </div>
+      </section>
 
-          {loading ? (
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-              {[...Array(4)].map((_, i) => (
-                <div key={i} className="card h-64 animate-pulse bg-gray-200" />
-              ))}
+      {/* Latest Posts */}
+      {latestPosts.length > 0 && (
+        <section className="section-padding bg-white dark:bg-gray-950">
+          <div className="container-wide">
+            <div className="flex items-center justify-between mb-10">
+              <div>
+                <h2 className="text-3xl font-bold text-gray-900 dark:text-white">
+                  Latest Articles
+                </h2>
+                <p className="mt-2 text-gray-600 dark:text-gray-400">
+                  Fresh perspectives on AI and technology
+                </p>
+              </div>
+              <Link href="/blog" className="hidden sm:flex items-center gap-1 text-indigo-600 dark:text-indigo-400 font-medium hover:gap-2 transition-all">
+                View all <ArrowRight size={16} />
+              </Link>
             </div>
-          ) : (
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-              {trendingTools.map((tool) => (
-                <Link key={tool._id} href={`/tools/${tool.slug}`} className="card card-hover group">
-                  <div className="p-6">
-                    <div className="flex items-start justify-between mb-4">
-                      <img src={tool.logo} alt={tool.name} className="w-12 h-12 rounded-lg object-cover" />
-                      <div className={`badge ${getCategoryColor(tool.category)}`}>
-                        {tool.category}
-                      </div>
-                    </div>
-                    <h3 className="font-bold text-gray-900 mb-2 group-hover:text-indigo-600 transition-colors">
-                      {tool.name}
+            <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-8">
+              {latestPosts.map((post) => (
+                <Link key={post._id} href={`/blog/${post.slug}`} className="card card-hover group">
+                  <div className="h-40 bg-gradient-to-br from-gray-100 to-gray-200 dark:from-gray-800 dark:to-gray-700" />
+                  <div className="p-5">
+                    <CategoryBadge category={post.category} />
+                    <h3 className="mt-2 font-semibold text-gray-900 dark:text-white group-hover:text-indigo-600 dark:group-hover:text-indigo-400 transition-colors line-clamp-2">
+                      {post.title}
                     </h3>
-                    <p className="text-sm text-gray-600 mb-4 line-clamp-2">{tool.shortDescription}</p>
-                    <div className="flex items-center justify-between">
-                      <div className="flex items-center gap-1">
-                        <Star className="w-4 h-4 text-yellow-400 fill-yellow-400" />
-                        <span className="font-medium">{tool.rating.overall.toFixed(1)}</span>
-                      </div>
-                      <span className={`badge ${getPricingBadge(tool.pricing).class} text-xs`}>
-                        {getPricingBadge(tool.pricing).text}
-                      </span>
+                    <p className="mt-2 text-sm text-gray-600 dark:text-gray-400 line-clamp-2">
+                      {post.excerpt}
+                    </p>
+                    <div className="mt-3 flex items-center gap-3 text-xs text-gray-500">
+                      <span>{formatDate(post.publishedAt)}</span>
+                      <span>&middot;</span>
+                      <span>{post.readingTime} min read</span>
                     </div>
                   </div>
                 </Link>
               ))}
             </div>
-          )}
-        </div>
-      </section>
+          </div>
+        </section>
+      )}
 
-      {/* Why Choose Us */}
-      <section className="py-16 bg-indigo-900 text-white">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="text-center mb-12">
-            <h2 className="text-3xl font-bold mb-4">Why Choose MindfulBlogAI?</h2>
-            <p className="text-indigo-200 max-w-2xl mx-auto">
-              We help you find the right AI tools without the guesswork.
+      {/* Browse Categories */}
+      <section className="section-padding bg-gray-50 dark:bg-gray-900">
+        <div className="container-wide">
+          <div className="text-center mb-10">
+            <h2 className="text-3xl font-bold text-gray-900 dark:text-white">
+              Explore by Topic
+            </h2>
+            <p className="mt-2 text-gray-600 dark:text-gray-400">
+              Find articles that match your interests
             </p>
           </div>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-            {[
-              {
-                icon: <Zap className="w-8 h-8" />,
-                title: 'Expert Reviews',
-                description: 'In-depth analysis of features, pricing, and real-world performance.',
-              },
-              {
-                icon: <TrendingUp className="w-8 h-8" />,
-                title: 'Side-by-Side Comparisons',
-                description: 'Compare multiple tools easily to find your perfect match.',
-              },
-              {
-                icon: <Star className="w-8 h-8" />,
-                title: 'Exclusive Deals',
-                description: 'Get special discounts and extended trials through our partnerships.',
-              },
-            ].map((feature, i) => (
-              <div key={i} className="text-center p-6">
-                <div className="inline-flex items-center justify-center w-16 h-16 bg-white/10 rounded-xl mb-4">
-                  {feature.icon}
+          <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-4">
+            {BLOG_CATEGORIES.map((cat) => (
+              <Link
+                key={cat.slug}
+                href={`/blog/category/${cat.slug}`}
+                className="card card-hover p-5 text-center group"
+              >
+                <div className="w-12 h-12 rounded-xl bg-indigo-50 dark:bg-indigo-900/20 text-indigo-600 dark:text-indigo-400 flex items-center justify-center mx-auto mb-3">
+                  <TrendingUp size={24} />
                 </div>
-                <h3 className="text-xl font-semibold mb-2">{feature.title}</h3>
-                <p className="text-indigo-200">{feature.description}</p>
-              </div>
+                <h3 className="font-semibold text-gray-900 dark:text-white group-hover:text-indigo-600 dark:group-hover:text-indigo-400 transition-colors">
+                  {cat.name}
+                </h3>
+              </Link>
             ))}
           </div>
         </div>
       </section>
+    </>
+  );
+}
 
-      {/* Newsletter */}
-      <section className="py-16 bg-gray-50">
-        <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-          <h2 className="text-3xl font-bold text-gray-900 mb-4">Stay Updated</h2>
-          <p className="text-gray-600 mb-8">
-            Get weekly AI tool recommendations, exclusive deals, and industry insights.
-          </p>
-          <form className="flex flex-col sm:flex-row gap-4 max-w-md mx-auto">
-            <input
-              type="email"
-              placeholder="Enter your email"
-              className="flex-1 px-4 py-3 rounded-lg border border-gray-300 focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
-            />
-            <button type="submit" className="btn-primary whitespace-nowrap">
-              Subscribe
-            </button>
-          </form>
-          <p className="text-sm text-gray-500 mt-4">No spam. Unsubscribe anytime.</p>
-        </div>
-      </section>
-    </div>
+function CategoryBadge({ category }: { category: string }) {
+  const cat = BLOG_CATEGORIES.find((c) => c.slug === category);
+  return (
+    <Badge
+      label={cat?.name || category}
+      color={cat?.color || 'gray'}
+      size="sm"
+    />
   );
 }

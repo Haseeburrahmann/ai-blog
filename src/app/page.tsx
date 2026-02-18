@@ -1,7 +1,7 @@
 import Link from 'next/link';
 import {
   ArrowRight, BookOpen, Wrench, Sparkles, Users, Newspaper,
-  TrendingUp, Zap, Shield,
+  TrendingUp, Zap, Shield, Scale, Megaphone, PenTool, Code, Star, FileText,
 } from 'lucide-react';
 import connectDB from '@/lib/mongodb';
 import BlogPost from '@/models/BlogPost';
@@ -137,7 +137,7 @@ export default async function HomePage() {
             <div className="grid md:grid-cols-3 gap-8">
               {featuredPosts.map((post) => (
                 <Link key={post._id} href={`/blog/${post.slug}`} className="card card-hover group">
-                  <div className="h-48 bg-gradient-to-br from-indigo-100 to-purple-100 dark:from-indigo-900/20 dark:to-purple-900/20" />
+                  <CardImage category={post.category} />
                   <div className="p-6">
                     <CategoryBadge category={post.category} />
                     <h3 className="mt-3 text-lg font-semibold text-gray-900 dark:text-white group-hover:text-indigo-600 dark:group-hover:text-indigo-400 transition-colors line-clamp-2">
@@ -268,7 +268,7 @@ export default async function HomePage() {
             <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-8">
               {latestPosts.map((post) => (
                 <Link key={post._id} href={`/blog/${post.slug}`} className="card card-hover group">
-                  <div className="h-40 bg-gradient-to-br from-gray-100 to-gray-200 dark:from-gray-800 dark:to-gray-700" />
+                  <CardImage category={post.category} />
                   <div className="p-5">
                     <CategoryBadge category={post.category} />
                     <h3 className="mt-2 font-semibold text-gray-900 dark:text-white group-hover:text-indigo-600 dark:group-hover:text-indigo-400 transition-colors line-clamp-2">
@@ -331,5 +331,38 @@ function CategoryBadge({ category }: { category: string }) {
       color={cat?.color || 'gray'}
       size="sm"
     />
+  );
+}
+
+const CATEGORY_CARD_STYLES: Record<string, { gradient: string; darkGradient: string; iconColor: string }> = {
+  'ai-finance':      { gradient: 'from-emerald-100 to-teal-100',   darkGradient: 'dark:from-emerald-900/30 dark:to-teal-900/20',   iconColor: 'text-emerald-500 dark:text-emerald-400' },
+  'ai-legal':        { gradient: 'from-blue-100 to-sky-100',       darkGradient: 'dark:from-blue-900/30 dark:to-sky-900/20',       iconColor: 'text-blue-500 dark:text-blue-400' },
+  'ai-marketing':    { gradient: 'from-purple-100 to-fuchsia-100', darkGradient: 'dark:from-purple-900/30 dark:to-fuchsia-900/20', iconColor: 'text-purple-500 dark:text-purple-400' },
+  'ai-writing':      { gradient: 'from-indigo-100 to-violet-100',  darkGradient: 'dark:from-indigo-900/30 dark:to-violet-900/20',  iconColor: 'text-indigo-500 dark:text-indigo-400' },
+  'ai-development':  { gradient: 'from-orange-100 to-amber-100',   darkGradient: 'dark:from-orange-900/30 dark:to-amber-900/20',   iconColor: 'text-orange-500 dark:text-orange-400' },
+  'ai-productivity': { gradient: 'from-teal-100 to-cyan-100',      darkGradient: 'dark:from-teal-900/30 dark:to-cyan-900/20',      iconColor: 'text-teal-500 dark:text-teal-400' },
+  'tutorials':       { gradient: 'from-cyan-100 to-blue-100',      darkGradient: 'dark:from-cyan-900/30 dark:to-blue-900/20',      iconColor: 'text-cyan-500 dark:text-cyan-400' },
+  'tool-reviews':    { gradient: 'from-pink-100 to-rose-100',      darkGradient: 'dark:from-pink-900/30 dark:to-rose-900/20',      iconColor: 'text-pink-500 dark:text-pink-400' },
+};
+
+const CATEGORY_CARD_ICONS: Record<string, React.ComponentType<{ size?: number; className?: string }>> = {
+  'ai-finance': TrendingUp,
+  'ai-legal': Scale,
+  'ai-marketing': Megaphone,
+  'ai-writing': PenTool,
+  'ai-development': Code,
+  'ai-productivity': Zap,
+  'tutorials': BookOpen,
+  'tool-reviews': Star,
+};
+
+function CardImage({ category }: { category: string }) {
+  const style = CATEGORY_CARD_STYLES[category] || { gradient: 'from-indigo-100 to-purple-100', darkGradient: 'dark:from-indigo-900/30 dark:to-purple-900/20', iconColor: 'text-indigo-500 dark:text-indigo-400' };
+  const IconComp = CATEGORY_CARD_ICONS[category] || FileText;
+  return (
+    <div className={`h-48 bg-gradient-to-br ${style.gradient} ${style.darkGradient} relative flex items-center justify-center overflow-hidden`}>
+      <div className="absolute inset-0 opacity-[0.07]" style={{ backgroundImage: 'radial-gradient(circle at 1px 1px, currentColor 1px, transparent 0)', backgroundSize: '24px 24px' }} />
+      <IconComp size={56} className={`${style.iconColor} opacity-40`} />
+    </div>
   );
 }

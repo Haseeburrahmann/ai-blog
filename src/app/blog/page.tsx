@@ -80,17 +80,26 @@ export default async function BlogPage({ searchParams }: Props) {
         <div className="container-wide">
           {serializedPosts.length > 0 ? (
             <>
+              {/* First row of posts */}
               <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-8">
-                {serializedPosts.map((post, i) => (
-                  <div key={post._id}>
-                    <BlogCard post={post} />
-                    {/* Ad after 3rd post */}
-                    {i === 2 && serializedPosts.length > 4 && (
-                      <AdBanner className="mt-8 sm:col-span-2 lg:col-span-3" />
-                    )}
-                  </div>
+                {serializedPosts.slice(0, 3).map((post) => (
+                  <BlogCard key={post._id} post={post} />
                 ))}
               </div>
+
+              {/* Full-width ad between rows */}
+              {serializedPosts.length > 3 && (
+                <AdBanner className="my-8" />
+              )}
+
+              {/* Remaining posts */}
+              {serializedPosts.length > 3 && (
+                <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-8">
+                  {serializedPosts.slice(3).map((post) => (
+                    <BlogCard key={post._id} post={post} />
+                  ))}
+                </div>
+              )}
               <div className="mt-12">
                 <Pagination
                   currentPage={page}

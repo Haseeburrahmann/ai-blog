@@ -10,6 +10,7 @@ import { SITE_URL } from '@/lib/constants';
 import ToolRunner from '@/components/tools/ToolRunner';
 import AdSenseUnit from '@/components/ads/AdSenseUnit';
 import NewsletterForm from '@/components/ui/NewsletterForm';
+import RecommendedTools from '@/components/affiliate/RecommendedTools';
 import type { ToolData } from '@/types';
 
 export const revalidate = 86400;
@@ -54,11 +55,100 @@ const FALLBACK_TOOLS: Record<string, Omit<ToolData, '_id'>> = {
     category: 'Utility',
     componentName: 'PasswordGenerator',
     icon: 'Lock',
-    published: true,
-    featured: true,
-    usageCount: 0,
+    published: true, featured: true, usageCount: 0,
     metaTitle: 'Free Password Generator - Strong & Secure Passwords',
     metaDescription: 'Generate strong, secure passwords instantly. Customize length, characters, and see strength ratings. Uses cryptographic randomness. Free, no signup.',
+    relatedBlogSlugs: [],
+  },
+  'token-counter': {
+    name: 'AI Token Counter',
+    slug: 'token-counter',
+    description: 'Estimate token counts and costs for popular AI models including GPT-4, Claude, and Gemini. Essential for developers budgeting API usage and optimizing prompt length.',
+    shortDescription: 'Estimate token counts and API costs for GPT-4, Claude, and Gemini.',
+    category: 'AI',
+    componentName: 'TokenCounter',
+    icon: 'Hash',
+    published: true, featured: true, usageCount: 0,
+    metaTitle: 'Free AI Token Counter - Estimate Tokens & API Costs',
+    metaDescription: 'Free online AI token counter. Estimate token counts and costs for GPT-4, Claude, and Gemini models instantly. No signup required.',
+    relatedBlogSlugs: [],
+  },
+  'prompt-optimizer': {
+    name: 'AI Prompt Optimizer',
+    slug: 'prompt-optimizer',
+    description: 'Build structured, effective AI prompts using the Role-Task-Context-Format framework. Includes quick templates for common use cases and one-click copy for ChatGPT, Claude, and other AI assistants.',
+    shortDescription: 'Build structured, effective prompts using role, task, context, and format framework.',
+    category: 'AI',
+    componentName: 'PromptOptimizer',
+    icon: 'Sparkles',
+    published: true, featured: true, usageCount: 0,
+    metaTitle: 'Free AI Prompt Optimizer - Build Better ChatGPT Prompts',
+    metaDescription: 'Free AI prompt builder and optimizer. Create structured prompts for ChatGPT, Claude, and other AI tools. Templates included. No signup required.',
+    relatedBlogSlugs: [],
+  },
+  'ai-cost-calculator': {
+    name: 'AI Cost Calculator',
+    slug: 'ai-cost-calculator',
+    description: 'Compare API costs across OpenAI, Anthropic, and Google AI models. Calculate per-request, daily, and monthly costs based on your token usage and request volume.',
+    shortDescription: 'Compare API costs across OpenAI, Anthropic, and Google models.',
+    category: 'AI',
+    componentName: 'AiCostCalculator',
+    icon: 'Calculator',
+    published: true, featured: true, usageCount: 0,
+    metaTitle: 'Free AI API Cost Calculator - Compare GPT-4, Claude & Gemini Pricing',
+    metaDescription: 'Free AI cost calculator. Compare API pricing for GPT-4, Claude, Gemini and more. Calculate daily and monthly costs. No signup required.',
+    relatedBlogSlugs: [],
+  },
+  'meta-tag-generator': {
+    name: 'Meta Tag Generator',
+    slug: 'meta-tag-generator',
+    description: 'Generate SEO-optimized meta tags for your website including title, description, Open Graph, and Twitter Card tags. Includes a live Google search preview to see exactly how your page will appear in search results.',
+    shortDescription: 'Generate SEO meta tags with Google preview, Open Graph, and Twitter cards.',
+    category: 'SEO',
+    componentName: 'MetaTagGenerator',
+    icon: 'Globe',
+    published: true, featured: false, usageCount: 0,
+    metaTitle: 'Free Meta Tag Generator - SEO Tags, Open Graph & Twitter Cards',
+    metaDescription: 'Free meta tag generator for SEO. Create title, description, Open Graph, and Twitter Card tags with live Google preview. No signup required.',
+    relatedBlogSlugs: [],
+  },
+  'readability-checker': {
+    name: 'Readability Checker',
+    slug: 'readability-checker',
+    description: 'Analyze your text readability using industry-standard formulas including Flesch Reading Ease, Flesch-Kincaid Grade Level, Gunning Fog Index, and Coleman-Liau Index. Get actionable insights on audience level and content complexity.',
+    shortDescription: 'Analyze text readability with Flesch, Gunning Fog, and Coleman-Liau scores.',
+    category: 'Writing',
+    componentName: 'ReadabilityChecker',
+    icon: 'BookOpen',
+    published: true, featured: false, usageCount: 0,
+    metaTitle: 'Free Readability Checker - Flesch Score & Grade Level Analysis',
+    metaDescription: 'Free readability checker. Analyze text with Flesch Reading Ease, Gunning Fog, and Coleman-Liau scores. Know your audience level. No signup required.',
+    relatedBlogSlugs: [],
+  },
+  'markdown-to-html': {
+    name: 'Markdown to HTML',
+    slug: 'markdown-to-html',
+    description: 'Convert Markdown to clean HTML instantly. Supports headings, bold, italic, links, images, code blocks, lists, and more. Switch between HTML code view and rendered preview.',
+    shortDescription: 'Convert Markdown to clean HTML with live preview and copy.',
+    category: 'Developer',
+    componentName: 'MarkdownToHtml',
+    icon: 'Code',
+    published: true, featured: false, usageCount: 0,
+    metaTitle: 'Free Markdown to HTML Converter - Live Preview & Copy',
+    metaDescription: 'Free Markdown to HTML converter. Convert Markdown to clean HTML with live preview, syntax support, and one-click copy. No signup required.',
+    relatedBlogSlugs: [],
+  },
+  'regex-tester': {
+    name: 'Regex Tester',
+    slug: 'regex-tester',
+    description: 'Test regular expressions with real-time match highlighting, group capture display, and string replacement. Includes common pattern presets for emails, URLs, phone numbers, and more.',
+    shortDescription: 'Test regex patterns with match highlighting, group capture, and replacement.',
+    category: 'Developer',
+    componentName: 'RegexTester',
+    icon: 'Terminal',
+    published: true, featured: false, usageCount: 0,
+    metaTitle: 'Free Regex Tester - Test Regular Expressions Online',
+    metaDescription: 'Free online regex tester. Test patterns with real-time highlighting, group capture, and replacement. Common presets included. No signup required.',
     relatedBlogSlugs: [],
   },
 };
@@ -209,6 +299,9 @@ export default async function ToolPage({ params }: Props) {
                     ))}
                 </div>
               </div>
+
+              {/* Affiliate Recommendations */}
+              <RecommendedTools limit={3} />
             </div>
           </aside>
         </div>

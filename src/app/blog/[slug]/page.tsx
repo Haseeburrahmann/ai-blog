@@ -16,6 +16,7 @@ import ShareButtons from '@/components/ui/ShareButtons';
 import NewsletterForm from '@/components/ui/NewsletterForm';
 import Badge from '@/components/ui/Badge';
 import AdSenseUnit from '@/components/ads/AdSenseUnit';
+import RecommendedTools from '@/components/affiliate/RecommendedTools';
 import type { BlogPostData } from '@/types';
 
 export const revalidate = 3600;
@@ -220,6 +221,8 @@ export default async function BlogPostPage({ params }: Props) {
                   <span className="text-[10px] text-gray-400 uppercase tracking-wider">Advertisement</span>
                   <AdSenseUnit format="rectangle" className="mt-1" />
                 </div>
+
+                <RecommendedTools limit={3} />
               </div>
             </aside>
           </div>

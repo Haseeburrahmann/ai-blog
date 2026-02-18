@@ -47,7 +47,7 @@ const ToolSchema = new Schema<ITool>(
   { timestamps: true }
 );
 
-ToolSchema.index({ slug: 1 });
+// slug index already created by `unique: true`
 ToolSchema.index({ category: 1, published: 1 });
 ToolSchema.index({ published: 1, featured: -1 });
 

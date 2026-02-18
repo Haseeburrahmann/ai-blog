@@ -23,7 +23,7 @@ const NewsletterSubscriberSchema = new Schema<INewsletterSubscriber>(
   { timestamps: true }
 );
 
-NewsletterSubscriberSchema.index({ email: 1 });
+// email index already created by `unique: true`
 NewsletterSubscriberSchema.index({ active: 1 });
 
 export default mongoose.models.NewsletterSubscriber ||

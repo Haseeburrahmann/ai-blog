@@ -11,6 +11,7 @@ import Badge from '@/components/ui/Badge';
 import NewsletterForm from '@/components/ui/NewsletterForm';
 import AdBanner from '@/components/ads/AdBanner';
 import { BLOG_CATEGORIES } from '@/lib/constants';
+import { generateOrganizationJsonLd, generateWebsiteJsonLd } from '@/lib/seo';
 import type { BlogPostData, ToolData } from '@/types';
 
 export const revalidate = 3600;
@@ -49,8 +50,20 @@ async function getData() {
 export default async function HomePage() {
   const { featuredPosts, latestPosts, featuredTools } = await getData();
 
+  const organizationJsonLd = generateOrganizationJsonLd();
+  const websiteJsonLd = generateWebsiteJsonLd();
+
   return (
     <>
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(organizationJsonLd) }}
+      />
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(websiteJsonLd) }}
+      />
+
       {/* Hero */}
       <section className="relative overflow-hidden bg-gradient-to-br from-indigo-50 via-white to-purple-50 dark:from-gray-950 dark:via-gray-950 dark:to-indigo-950/30">
         <div className="absolute inset-0 bg-[url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNjAiIGhlaWdodD0iNjAiIHZpZXdCb3g9IjAgMCA2MCA2MCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48ZyBmaWxsPSJub25lIiBmaWxsLXJ1bGU9ImV2ZW5vZGQiPjxnIGZpbGw9IiM2MzY2ZjEiIGZpbGwtb3BhY2l0eT0iMC4wMyI+PGNpcmNsZSBjeD0iMzAiIGN5PSIzMCIgcj0iMiIvPjwvZz48L2c+PC9zdmc+')] opacity-60" />
@@ -191,6 +204,9 @@ export default async function HomePage() {
                   { name: 'Word Counter', desc: 'Count words, characters, sentences and estimate reading time', slug: 'word-counter' },
                   { name: 'JSON Formatter', desc: 'Format, validate and beautify your JSON data instantly', slug: 'json-formatter' },
                   { name: 'Password Generator', desc: 'Generate strong, secure passwords with custom options', slug: 'password-generator' },
+                  { name: 'AI Token Counter', desc: 'Estimate token counts and API costs for GPT-4, Claude, and Gemini', slug: 'token-counter' },
+                  { name: 'AI Prompt Optimizer', desc: 'Build structured, effective prompts for any AI model', slug: 'prompt-optimizer' },
+                  { name: 'AI Cost Calculator', desc: 'Compare API costs across OpenAI, Anthropic, and Google', slug: 'ai-cost-calculator' },
                 ].map((tool) => (
                   <Link key={tool.slug} href={`/tools/${tool.slug}`} className="card card-hover p-6 group">
                     <div className="w-12 h-12 rounded-xl bg-indigo-50 dark:bg-indigo-900/20 text-indigo-600 dark:text-indigo-400 flex items-center justify-center mb-4">

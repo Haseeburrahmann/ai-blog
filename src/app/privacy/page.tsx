@@ -44,14 +44,39 @@ export default function PrivacyPage() {
             (Google AdSense). You can control cookie preferences in your browser settings.
           </p>
 
-          <h2>Your Rights</h2>
-          <p>You have the right to:</p>
+          <h2>Google AdSense & Advertising</h2>
+          <p>
+            We use Google AdSense to display advertisements. Google and its partners may use cookies
+            and similar technologies to serve ads based on your prior visits to this or other websites.
+            You may opt out of personalized advertising by visiting{' '}
+            <a href="https://www.google.com/settings/ads" target="_blank" rel="noopener noreferrer">Google Ads Settings</a>.
+          </p>
+
+          <h2>Your Rights (GDPR)</h2>
+          <p>If you are in the European Economic Area (EEA), you have the right to:</p>
           <ul>
-            <li>Request access to your personal data</li>
-            <li>Request deletion of your data</li>
-            <li>Unsubscribe from our newsletter at any time</li>
-            <li>Opt out of personalized advertising</li>
+            <li>Access the personal data we hold about you</li>
+            <li>Request correction of inaccurate personal data</li>
+            <li>Request deletion of your personal data</li>
+            <li>Object to processing of your personal data</li>
+            <li>Request data portability</li>
+            <li>Withdraw consent at any time</li>
           </ul>
+
+          <h2>California Residents (CCPA)</h2>
+          <p>
+            If you are a California resident, you have the right to know what personal information we
+            collect, request deletion of your data, and opt out of the sale of personal information.
+            We do not sell personal information. To exercise your rights, contact us at{' '}
+            <a href={`mailto:${SITE_EMAIL}`}>{SITE_EMAIL}</a>.
+          </p>
+
+          <h2>Data Retention</h2>
+          <p>
+            We retain newsletter subscriber data for as long as you remain subscribed. Analytics data
+            is retained according to Google Analytics default retention policies. You can request
+            deletion of your data at any time.
+          </p>
 
           <h2>Free Tools</h2>
           <p>

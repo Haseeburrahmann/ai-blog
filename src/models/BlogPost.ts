@@ -69,7 +69,7 @@ const BlogPostSchema = new Schema<IBlogPost>(
   { timestamps: true }
 );
 
-BlogPostSchema.index({ slug: 1 });
+// slug index already created by `unique: true`
 BlogPostSchema.index({ category: 1, published: 1, publishedAt: -1 });
 BlogPostSchema.index({ tags: 1 });
 BlogPostSchema.index({ published: 1, featured: -1, publishedAt: -1 });

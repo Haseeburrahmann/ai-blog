@@ -50,9 +50,17 @@ export default function DisclaimerPage() {
 
           <h2>FTC Compliance</h2>
           <p>
-            In accordance with the FTC guidelines, we disclose that some of the links on our
-            website are affiliate links and we may receive compensation for recommendations made
-            in our articles and reviews.
+            In accordance with the Federal Trade Commission&apos;s 16 CFR Part 255 (&quot;Guides Concerning
+            the Use of Endorsements and Testimonials in Advertising&quot;), we disclose that some of the
+            links on our website are affiliate links and we may receive compensation for recommendations
+            made in our articles and reviews.
+          </p>
+          <p>
+            <strong>Material Connection Disclosure:</strong> Some of the links on this website are
+            &quot;affiliate links.&quot; This means if you click on the link and purchase an item, {SITE_NAME}{' '}
+            will receive an affiliate commission. Regardless, we only recommend products or services we
+            use personally and believe will add value to our readers. We are disclosing this in accordance
+            with the Federal Trade Commission&apos;s 16 CFR, Part 255.
           </p>
 
           <h2>Questions?</h2>

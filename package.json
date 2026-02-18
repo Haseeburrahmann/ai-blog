@@ -1,5 +1,5 @@
 {
-  "name": "ai-blog",
+  "name": "mindfulblogai-directory",
   "version": "0.1.0",
   "private": true,
   "scripts": {
@@ -7,11 +7,12 @@
     "build": "next build",
     "start": "next start",
     "lint": "next lint",
-    "seed-news": "node scripts/seed-news.js"
+    "seed-tools": "node scripts/seed-tools.js"
   },
   "dependencies": {
     "critters": "^0.0.23",
     "dotenv": "^17.2.1",
+    "lucide-react": "^0.460.0",
     "mongoose": "^8.16.5",
     "next": "15.4.4",
     "react": "19.1.0",

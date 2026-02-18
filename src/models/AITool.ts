@@ -1,213 +1,184 @@
-import mongoose, { Document, Schema } from 'mongoose'
+import mongoose, { Schema, Document } from 'mongoose';
 
 export interface IAITool extends Document {
-  name: string
-  slug: string
-  description: string
-  longDescription: string
-  category: string
-  subcategory?: string
-  website: string
-  logo?: string
-  screenshots: string[]
+  name: string;
+  slug: string;
+  description: string;
+  shortDescription: string;
+  logo: string;
+  websiteUrl: string;
+  affiliateUrl?: string;
+  category: string;
+  subcategory?: string;
+  tags: string[];
   pricing: {
-    type: 'Free' | 'Freemium' | 'Paid' | 'Enterprise'
-    startingPrice?: number
-    currency: string
-    billingCycle?: 'monthly' | 'yearly' | 'one-time'
-  }
+    model: 'free' | 'freemium' | 'paid' | 'enterprise';
+    startingPrice?: number;
+    priceUnit?: string;
+    hasFreeTier: boolean;
+    hasTrial: boolean;
+  };
   rating: {
-    overall: number
-    usability: number
-    features: number
-    value: number
-    support: number
-  }
-  features: string[]
-  pros: string[]
-  cons: string[]
-  useCases: string[]
-  targetAudience: string[]
-  alternatives: string[]
-  lastUpdated: Date
-  isActive: boolean
-  isFeatured: boolean
-  reviewCount: number
-  affiliateLink?: string
+    overall: number;
+    easeOfUse: number;
+    features: number;
+    value: number;
+    support: number;
+    reviewCount: number;
+  };
+  features: string[];
+  useCases: string[];
+  integrations: string[];
+  alternatives: string[];
+  featured: boolean;
+  trending: boolean;
+  published: boolean;
+  publishedAt: Date;
+  updatedAt: Date;
+  metaTitle?: string;
+  metaDescription?: string;
 }
 
-const AIToolSchema: Schema = new Schema({
+const AIToolSchema = new Schema<IAITool>({
   name: {
     type: String,
-    required: [true, 'Tool name is required'],
+    required: true,
     trim: true,
-    maxLength: [100, 'Name cannot exceed 100 characters']
   },
   slug: {
     type: String,
-    required: [true, 'Slug is required'],
+    required: true,
     unique: true,
-    trim: true,
-    lowercase: true
+    lowercase: true,
   },
   description: {
     type: String,
-    required: [true, 'Description is required'],
-    maxLength: [200, 'Description cannot exceed 200 characters']
+    required: true,
   },
-  longDescription: {
+  shortDescription: {
     type: String,
-    required: [true, 'Long description is required']
-  },
-  category: {
-    type: String,
-    required: [true, 'Category is required'],
-    enum: [
-      'Writing & Content',
-      'Image Generation',
-      'Video & Audio',
-      'Code & Development',
-      'Business & Productivity',
-      'Data Analysis',
-      'Marketing & SEO',
-      'Design & Creative',
-      'Research & Education',
-      'Customer Service',
-      'Other'
-    ]
-  },
-  subcategory: {
-    type: String,
-    trim: true
-  },
-  website: {
-    type: String,
-    required: [true, 'Website URL is required'],
-    validate: {
-      validator: function(v: string) {
-        return /^https?:\/\/.+/.test(v)
-      },
-      message: 'Website must be a valid URL'
-    }
+    required: true,
+    maxlength: 200,
   },
   logo: {
     type: String,
-    default: null
+    required: true,
   },
-  screenshots: [{
-    type: String
+  websiteUrl: {
+    type: String,
+    required: true,
+  },
+  affiliateUrl: {
+    type: String,
+  },
+  category: {
+    type: String,
+    required: true,
+    enum: [
+      'Writing',
+      'Coding',
+      'Image',
+      'Video',
+      'Audio',
+      'Chatbot',
+      'Automation',
+      'Productivity',
+      'Design',
+      'Marketing',
+      'Research',
+      'Customer Support',
+    ],
+  },
+  subcategory: {
+    type: String,
+  },
+  tags: [{
+    type: String,
+    trim: true,
   }],
   pricing: {
-    type: {
+    model: {
       type: String,
-      enum: ['Free', 'Freemium', 'Paid', 'Enterprise'],
-      required: true
+      enum: ['free', 'freemium', 'paid', 'enterprise'],
+      required: true,
     },
-    startingPrice: {
-      type: Number,
-      min: 0
+    startingPrice: Number,
+    priceUnit: String,
+    hasFreeTier: {
+      type: Boolean,
+      default: false,
     },
-    currency: {
-      type: String,
-      default: 'USD'
+    hasTrial: {
+      type: Boolean,
+      default: false,
     },
-    billingCycle: {
-      type: String,
-      enum: ['monthly', 'yearly', 'one-time']
-    }
   },
   rating: {
     overall: {
       type: Number,
-      required: true,
       min: 0,
       max: 5,
-      default: 0
+      default: 0,
     },
-    usability: {
+    easeOfUse: {
       type: Number,
       min: 0,
       max: 5,
-      default: 0
     },
     features: {
       type: Number,
       min: 0,
       max: 5,
-      default: 0
     },
     value: {
       type: Number,
       min: 0,
       max: 5,
-      default: 0
     },
     support: {
       type: Number,
       min: 0,
       max: 5,
-      default: 0
-    }
+    },
+    reviewCount: {
+      type: Number,
+      default: 0,
+    },
   },
-  features: [{
-    type: String,
-    trim: true
-  }],
-  pros: [{
-    type: String,
-    trim: true
-  }],
-  cons: [{
-    type: String,
-    trim: true
-  }],
-  useCases: [{
-    type: String,
-    trim: true
-  }],
-  targetAudience: [{
-    type: String,
-    trim: true
-  }],
-  alternatives: [{
-    type: String,
-    trim: true
-  }],
-  lastUpdated: {
+  features: [String],
+  useCases: [String],
+  integrations: [String],
+  alternatives: [String],
+  featured: {
+    type: Boolean,
+    default: false,
+  },
+  trending: {
+    type: Boolean,
+    default: false,
+  },
+  published: {
+    type: Boolean,
+    default: false,
+  },
+  publishedAt: {
     type: Date,
-    default: Date.now
   },
-  isActive: {
-    type: Boolean,
-    default: true
+  updatedAt: {
+    type: Date,
+    default: Date.now,
   },
-  isFeatured: {
-    type: Boolean,
-    default: false
-  },
-  reviewCount: {
-    type: Number,
-    default: 0,
-    min: 0
-  },
-  affiliateLink: {
-    type: String,
-    default: null
-  }
+  metaTitle: String,
+  metaDescription: String,
 }, {
-  timestamps: true
-})
+  timestamps: true,
+});
 
-// Create slug from name before saving
-AIToolSchema.pre('save', function(this: IAITool, next) {
-  if (this.isModified('name') && !this.slug) {
-    this.slug = this.name
-      .toLowerCase()
-      .replace(/[^\w\s-]/g, '')
-      .replace(/[\s_-]+/g, '-')
-      .replace(/^-+|-+$/g, '')
-  }
-  next()
-})
+// Indexes for search performance
+AIToolSchema.index({ name: 'text', description: 'text', tags: 'text' });
+AIToolSchema.index({ category: 1, published: 1 });
+AIToolSchema.index({ featured: 1, published: 1 });
+AIToolSchema.index({ trending: 1, published: 1 });
+AIToolSchema.index({ 'rating.overall': -1 });
 
-export default mongoose.models.AITool || mongoose.model<IAITool>('AITool', AIToolSchema)
+export default mongoose.models.AITool || mongoose.model<IAITool>('AITool', AIToolSchema);

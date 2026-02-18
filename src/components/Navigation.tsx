@@ -1,187 +1,113 @@
-'use client'
+'use client';
 
-import { useState, useEffect } from 'react'
-import Link from 'next/link'
-import { usePathname } from 'next/navigation'
+import { useState, useEffect } from 'react';
+import Link from 'next/link';
+import { Menu, X, Sparkles, Search } from 'lucide-react';
 
-interface NavigationProps {
-  className?: string
-}
+const navLinks = [
+  { href: '/', label: 'Home' },
+  { href: '/categories', label: 'Categories' },
+  { href: '/comparisons', label: 'Comparisons' },
+  { href: '/deals', label: 'Deals' },
+  { href: '/blog', label: 'Blog' },
+];
 
-export default function Navigation({ className = '' }: NavigationProps) {
-  const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
-  const pathname = usePathname()
+export default function Navigation() {
+  const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const [isScrolled, setIsScrolled] = useState(false);
 
-  const toggleMobileMenu = () => {
-    setMobileMenuOpen(!mobileMenuOpen)
-  }
-
-  const closeMobileMenu = () => {
-    setMobileMenuOpen(false)
-  }
-
-  // Close mobile menu when clicking outside or pressing escape
   useEffect(() => {
-    const handleEscape = (e: KeyboardEvent) => {
-      if (e.key === 'Escape') {
-        setMobileMenuOpen(false)
-      }
-    }
-
-    if (mobileMenuOpen) {
-      document.addEventListener('keydown', handleEscape)
-      // Prevent body scroll when menu is open
-      document.body.style.overflow = 'hidden'
-    } else {
-      document.body.style.overflow = 'unset'
-    }
-
-    return () => {
-      document.removeEventListener('keydown', handleEscape)
-      document.body.style.overflow = 'unset'
-    }
-  }, [mobileMenuOpen])
-
-  const navItems = [
-    { href: '/', label: 'Home' },
-    { href: '/news', label: 'All News' },
-    { href: '/news?category=World', label: 'World' },
-    { href: '/news?category=Business', label: 'Business' },
-    { href: '/news?category=Technology', label: 'Technology' },
-    { href: '/news?category=Sports', label: 'Sports' },
-    { href: '/about', label: 'About' },
-    { href: '/contact', label: 'Contact' }
-  ]
-
-  const isActive = (href: string) => {
-    if (href === '/') return pathname === '/'
-    return pathname.startsWith(href)
-  }
+    const handleScroll = () => {
+      setIsScrolled(window.scrollY > 10);
+    };
+    window.addEventListener('scroll', handleScroll);
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, []);
 
   return (
-    <>
-      <header className={`bg-white shadow-sm border-b sticky top-0 z-50 ${className}`}>
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex justify-between items-center py-4 md:py-6">
-            {/* Logo */}
-            <Link href="/" className="flex items-center" onClick={closeMobileMenu}>
-              <div className="flex items-center space-x-2">
-                <div className="w-8 h-8 bg-gradient-to-br from-red-600 to-orange-600 rounded-lg flex items-center justify-center">
-                  <span className="text-white font-bold text-sm">WN</span>
-                </div>
-                <h1 className="text-xl md:text-2xl font-bold text-gray-900">World News</h1>
-              </div>
-            </Link>
-
-            {/* Desktop Navigation */}
-            <nav className="hidden md:flex space-x-6 lg:space-x-8">
-              {navItems.map((item) => (
-                <Link
-                  key={item.href}
-                  href={item.href}
-                  className={`transition-colors text-sm lg:text-base ${
-                    isActive(item.href)
-                      ? 'text-blue-600 font-medium'
-                      : 'text-gray-500 hover:text-gray-900'
-                  }`}
-                >
-                  {item.label}
-                </Link>
-              ))}
-            </nav>
-
-            {/* Mobile menu button */}
-            <button
-              onClick={toggleMobileMenu}
-              className="md:hidden inline-flex items-center justify-center p-2 rounded-md text-gray-500 hover:text-gray-900 hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-blue-500 transition-colors"
-              aria-expanded={mobileMenuOpen}
-              aria-label="Toggle navigation menu"
-            >
-              <span className="sr-only">Open main menu</span>
-              <div className="relative w-6 h-6">
-                <span className={`absolute block w-6 h-0.5 bg-current transform transition-all duration-300 ${
-                  mobileMenuOpen ? 'rotate-45 top-3' : 'top-1'
-                }`} />
-                <span className={`absolute block w-6 h-0.5 bg-current transform transition-all duration-300 top-3 ${
-                  mobileMenuOpen ? 'opacity-0' : 'opacity-100'
-                }`} />
-                <span className={`absolute block w-6 h-0.5 bg-current transform transition-all duration-300 ${
-                  mobileMenuOpen ? '-rotate-45 top-3' : 'top-5'
-                }`} />
-              </div>
-            </button>
-          </div>
-        </div>
-      </header>
-
-      {/* Mobile Navigation Menu - Slide in from right */}
-      <div className={`md:hidden fixed inset-y-0 right-0 z-50 w-full max-w-sm bg-white shadow-xl transform transition-transform duration-300 ease-in-out ${
-        mobileMenuOpen ? 'translate-x-0' : 'translate-x-full'
-      }`}>
-        <div className="flex flex-col h-full">
-          {/* Mobile menu header */}
-          <div className="flex items-center justify-between p-4 border-b border-gray-200">
-            <div className="flex items-center space-x-2">
-              <div className="w-8 h-8 bg-gradient-to-br from-red-600 to-orange-600 rounded-lg flex items-center justify-center">
-                <span className="text-white font-bold text-sm">WN</span>
-              </div>
-              <span className="text-lg font-bold text-gray-900">World News</span>
+    <nav 
+      className={`sticky top-0 z-50 transition-all duration-300 ${
+        isScrolled 
+          ? 'bg-white/95 backdrop-blur-md shadow-sm' 
+          : 'bg-white'
+      }`}
+    >
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="flex justify-between items-center h-16">
+          {/* Logo */}
+          <Link href="/" className="flex items-center gap-2 group">
+            <div className="w-9 h-9 bg-gradient-to-br from-indigo-600 to-purple-600 rounded-lg flex items-center justify-center group-hover:scale-105 transition-transform">
+              <Sparkles className="w-5 h-5 text-white" />
             </div>
-            <button
-              onClick={closeMobileMenu}
-              className="p-2 rounded-md text-gray-500 hover:text-gray-900 hover:bg-gray-100 transition-colors"
-            >
-              <span className="sr-only">Close menu</span>
-              <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-              </svg>
-            </button>
-          </div>
+            <span className="text-xl font-bold text-gray-900">
+              Mindful<span className="text-indigo-600">Blog</span>AI
+            </span>
+          </Link>
 
-          {/* Navigation links */}
-          <div className="flex-1 px-4 py-6 space-y-1">
-            {navItems.map((item) => (
+          {/* Desktop Navigation */}
+          <div className="hidden md:flex items-center gap-8">
+            {navLinks.map((link) => (
               <Link
-                key={item.href}
-                href={item.href}
-                onClick={closeMobileMenu}
-                className={`block px-4 py-3 rounded-lg text-base font-medium transition-all duration-200 ${
-                  isActive(item.href)
-                    ? 'text-blue-600 bg-blue-50 border-l-4 border-blue-600'
-                    : 'text-gray-700 hover:text-gray-900 hover:bg-gray-50'
-                }`}
+                key={link.href}
+                href={link.href}
+                className="text-gray-600 hover:text-indigo-600 font-medium transition-colors"
               >
-                {item.label}
+                {link.label}
               </Link>
             ))}
           </div>
 
-          {/* Mobile menu footer */}
-          <div className="px-4 py-6 border-t border-gray-200">
+          {/* Desktop Actions */}
+          <div className="hidden md:flex items-center gap-4">
             <Link
-              href="/admin"
-              onClick={closeMobileMenu}
-              className="block px-4 py-3 rounded-lg text-base font-medium text-gray-500 hover:text-gray-900 hover:bg-gray-50 transition-colors"
+              href="/search"
+              className="p-2 text-gray-500 hover:text-indigo-600 transition-colors rounded-lg hover:bg-gray-100"
+              aria-label="Search"
             >
-              Admin Panel
+              <Search className="w-5 h-5" />
             </Link>
-            <div className="mt-4 text-center">
-              <p className="text-sm text-gray-500">
-                © 2025 World News Network
-              </p>
+            <Link href="/submit" className="btn-primary text-sm">
+              Submit Tool
+            </Link>
+          </div>
+
+          {/* Mobile Menu Button */}
+          <button
+            onClick={() => setIsMenuOpen(!isMenuOpen)}
+            className="md:hidden p-2 text-gray-600 hover:text-indigo-600 rounded-lg hover:bg-gray-100"
+            aria-label="Toggle menu"
+          >
+            {isMenuOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
+          </button>
+        </div>
+
+        {/* Mobile Navigation */}
+        {isMenuOpen && (
+          <div className="md:hidden border-t border-gray-100 py-4">
+            <div className="flex flex-col gap-2">
+              {navLinks.map((link) => (
+                <Link
+                  key={link.href}
+                  href={link.href}
+                  onClick={() => setIsMenuOpen(false)}
+                  className="px-4 py-2 text-gray-600 hover:text-indigo-600 hover:bg-gray-50 rounded-lg font-medium transition-colors"
+                >
+                  {link.label}
+                </Link>
+              ))}
+              <div className="border-t border-gray-100 mt-2 pt-2">
+                <Link
+                  href="/submit"
+                  onClick={() => setIsMenuOpen(false)}
+                  className="mx-4 btn-primary text-sm text-center"
+                >
+                  Submit Tool
+                </Link>
+              </div>
             </div>
           </div>
-        </div>
+        )}
       </div>
-
-      {/* Mobile menu backdrop */}
-      {mobileMenuOpen && (
-        <div
-          className="md:hidden fixed inset-0 bg-black bg-opacity-50 z-40 transition-opacity duration-300"
-          onClick={closeMobileMenu}
-          aria-hidden="true"
-        />
-      )}
-    </>
-  )
+    </nav>
+  );
 }

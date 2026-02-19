@@ -5,6 +5,7 @@ import Navigation from '@/components/layout/Navigation';
 import Footer from '@/components/layout/Footer';
 import { ThemeProvider } from '@/components/layout/ThemeProvider';
 import ScrollToTop from '@/components/ui/ScrollToTop';
+import GoogleAnalytics from '@/components/analytics/GoogleAnalytics';
 import { SITE_NAME, SITE_URL, SITE_DESCRIPTION } from '@/lib/constants';
 
 const inter = Inter({ subsets: ['latin'], variable: '--font-inter', display: 'swap' });
@@ -34,6 +35,9 @@ export const metadata: Metadata = {
       'max-snippet': -1,
     },
   },
+  verification: {
+    google: process.env.NEXT_PUBLIC_GSC_VERIFICATION,
+  },
   openGraph: {
     type: 'website',
     locale: 'en_US',
@@ -41,17 +45,18 @@ export const metadata: Metadata = {
     siteName: SITE_NAME,
     title: `${SITE_NAME} | AI Blog, Free Tools & Resources`,
     description: SITE_DESCRIPTION,
-    images: [{ url: '/og-image.jpg', width: 1200, height: 630, alt: SITE_NAME }],
   },
   twitter: {
     card: 'summary_large_image',
     title: `${SITE_NAME} | AI Blog, Free Tools & Resources`,
     description: SITE_DESCRIPTION,
-    images: ['/og-image.jpg'],
     creator: '@mindfulblogai',
   },
   alternates: {
     canonical: SITE_URL,
+    types: {
+      'application/rss+xml': `${SITE_URL}/feed.xml`,
+    },
   },
 };
 
@@ -67,6 +72,8 @@ export default function RootLayout({
         <link rel="dns-prefetch" href="https://pagead2.googlesyndication.com" />
         <link rel="preconnect" href="https://www.googletagservices.com" />
         <link rel="dns-prefetch" href="https://www.googletagservices.com" />
+        <link rel="preconnect" href="https://www.googletagmanager.com" />
+        <link rel="dns-prefetch" href="https://www.googletagmanager.com" />
         <link rel="preconnect" href="https://fonts.googleapis.com" />
         <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
         <script
@@ -82,6 +89,7 @@ export default function RootLayout({
           <Footer />
           <ScrollToTop />
         </ThemeProvider>
+        <GoogleAnalytics />
       </body>
     </html>
   );

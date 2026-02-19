@@ -1,8 +1,10 @@
 import type { Metadata } from 'next';
 import Link from 'next/link';
+import { Suspense } from 'react';
 import connectDB from '@/lib/mongodb';
 import BlogPost from '@/models/BlogPost';
 import BlogCard from '@/components/blog/BlogCard';
+import BlogSearch from '@/components/blog/BlogSearch';
 import Pagination from '@/components/ui/Pagination';
 import Badge from '@/components/ui/Badge';
 import AdBanner from '@/components/ads/AdBanner';
@@ -18,27 +20,34 @@ export const metadata: Metadata = {
 export const revalidate = 3600;
 
 interface Props {
-  searchParams: Promise<{ page?: string }>;
+  searchParams: Promise<{ page?: string; search?: string }>;
 }
 
 export default async function BlogPage({ searchParams }: Props) {
-  const { page: pageParam } = await searchParams;
+  const { page: pageParam, search } = await searchParams;
   const page = Math.max(1, parseInt(pageParam || '1'));
 
   let serializedPosts: BlogPostData[] = [];
   let totalPages = 0;
+  const searchQuery = search?.trim() || '';
 
   try {
     await connectDB();
 
+    // Build query filter
+    const filter: Record<string, unknown> = { published: true };
+    if (searchQuery) {
+      filter.$text = { $search: searchQuery };
+    }
+
     const [posts, total] = await Promise.all([
-      BlogPost.find({ published: true })
-        .sort({ publishedAt: -1 })
+      BlogPost.find(filter)
+        .sort(searchQuery ? { score: { $meta: 'textScore' } } : { publishedAt: -1 })
         .skip((page - 1) * POSTS_PER_PAGE)
         .limit(POSTS_PER_PAGE)
         .select('title slug excerpt category featuredImage publishedAt readingTime tags')
         .lean(),
-      BlogPost.countDocuments({ published: true }),
+      BlogPost.countDocuments(filter),
     ]);
 
     totalPages = Math.ceil(total / POSTS_PER_PAGE);
@@ -59,8 +68,15 @@ export default async function BlogPage({ searchParams }: Props) {
             Expert insights on AI tools, productivity, and technology
           </p>
 
+          {/* Search */}
+          <div className="mt-6">
+            <Suspense fallback={null}>
+              <BlogSearch />
+            </Suspense>
+          </div>
+
           {/* Category Filters */}
-          <div className="mt-6 flex flex-wrap gap-2">
+          <div className="mt-4 flex flex-wrap gap-2">
             <Badge label="All" href="/blog" color="indigo" size="md" />
             {BLOG_CATEGORIES.map((cat) => (
               <Badge
@@ -78,6 +94,23 @@ export default async function BlogPage({ searchParams }: Props) {
       {/* Posts */}
       <section className="section-padding bg-white dark:bg-gray-950">
         <div className="container-wide">
+          {/* Search results indicator */}
+          {searchQuery && (
+            <div className="mb-6 flex items-center justify-between">
+              <p className="text-sm text-gray-600 dark:text-gray-400">
+                {serializedPosts.length > 0
+                  ? `Showing results for "${searchQuery}"`
+                  : `No results found for "${searchQuery}"`}
+              </p>
+              <Link
+                href="/blog"
+                className="text-sm text-indigo-600 dark:text-indigo-400 hover:underline"
+              >
+                Clear search
+              </Link>
+            </div>
+          )}
+
           {serializedPosts.length > 0 ? (
             <>
               {/* First row of posts */}
@@ -105,6 +138,7 @@ export default async function BlogPage({ searchParams }: Props) {
                   currentPage={page}
                   totalPages={totalPages}
                   basePath="/blog"
+                  extraParams={searchQuery ? { search: searchQuery } : undefined}
                 />
               </div>
             </>

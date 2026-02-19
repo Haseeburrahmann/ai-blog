@@ -6,9 +6,10 @@ interface PaginationProps {
   currentPage: number;
   totalPages: number;
   basePath: string;
+  extraParams?: Record<string, string>;
 }
 
-export default function Pagination({ currentPage, totalPages, basePath }: PaginationProps) {
+export default function Pagination({ currentPage, totalPages, basePath, extraParams }: PaginationProps) {
   if (totalPages <= 1) return null;
 
   const pages: (number | '...')[] = [];
@@ -25,7 +26,13 @@ export default function Pagination({ currentPage, totalPages, basePath }: Pagina
   }
 
   function getHref(page: number) {
-    return page === 1 ? basePath : `${basePath}?page=${page}`;
+    const params = new URLSearchParams();
+    if (extraParams) {
+      Object.entries(extraParams).forEach(([k, v]) => params.set(k, v));
+    }
+    if (page > 1) params.set('page', String(page));
+    const qs = params.toString();
+    return qs ? `${basePath}?${qs}` : basePath;
   }
 
   return (

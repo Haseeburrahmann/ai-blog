@@ -13,6 +13,7 @@ import ReadingProgress from '@/components/blog/ReadingProgress';
 import ViewCounter from '@/components/blog/ViewCounter';
 import TableOfContents from '@/components/ui/TableOfContents';
 import ShareButtons from '@/components/ui/ShareButtons';
+import InlineAffiliateCTA from '@/components/affiliate/InlineAffiliateCTA';
 import NewsletterForm from '@/components/ui/NewsletterForm';
 import Badge from '@/components/ui/Badge';
 import AdSenseUnit from '@/components/ads/AdSenseUnit';
@@ -186,6 +187,22 @@ export default async function BlogPostPage({ params }: Props) {
 
               <BlogContent content={p.content} />
 
+              {/* Inline Affiliate CTA */}
+              {(() => {
+                const ctaMap: Record<string, string> = {
+                  'ai-writing': 'copy-ai',
+                  'tool-reviews': 'copy-ai',
+                  'ai-marketing': 'jasper',
+                  'tutorials': 'notion-ai',
+                  'ai-productivity': 'notion-ai',
+                  'ai-finance': 'notion-ai',
+                  'ai-legal': 'writesonic',
+                  'ai-development': 'notion-ai',
+                };
+                const affiliateSlug = ctaMap[p.category];
+                return affiliateSlug ? <InlineAffiliateCTA slug={affiliateSlug} /> : null;
+              })()}
+
               {/* Bottom Ad */}
               <div className="mt-8 text-center">
                 <span className="text-[10px] text-gray-400 uppercase tracking-wider">Advertisement</span>
@@ -222,7 +239,7 @@ export default async function BlogPostPage({ params }: Props) {
                   <AdSenseUnit format="rectangle" className="mt-1" />
                 </div>
 
-                <RecommendedTools limit={3} />
+                <RecommendedTools limit={3} category={p.category} />
               </div>
             </aside>
           </div>

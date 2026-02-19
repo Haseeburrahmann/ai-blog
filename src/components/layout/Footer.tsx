@@ -59,6 +59,7 @@ export default function Footer() {
               <li><Link href="/blog/category/ai-writing" className="text-sm text-gray-600 dark:text-gray-400 hover:text-indigo-600 dark:hover:text-indigo-400 transition-colors">AI Writing</Link></li>
               <li><Link href="/blog/category/tool-reviews" className="text-sm text-gray-600 dark:text-gray-400 hover:text-indigo-600 dark:hover:text-indigo-400 transition-colors">Tool Reviews</Link></li>
               <li><Link href="/blog/category/tutorials" className="text-sm text-gray-600 dark:text-gray-400 hover:text-indigo-600 dark:hover:text-indigo-400 transition-colors">Tutorials</Link></li>
+              <li><Link href="/best-ai-tools" className="text-sm text-gray-600 dark:text-gray-400 hover:text-indigo-600 dark:hover:text-indigo-400 transition-colors">Best AI Tools</Link></li>
             </ul>
           </div>
 
@@ -87,6 +88,7 @@ export default function Footer() {
               <li><Link href="/privacy" className="text-sm text-gray-600 dark:text-gray-400 hover:text-indigo-600 dark:hover:text-indigo-400 transition-colors">Privacy Policy</Link></li>
               <li><Link href="/terms" className="text-sm text-gray-600 dark:text-gray-400 hover:text-indigo-600 dark:hover:text-indigo-400 transition-colors">Terms of Service</Link></li>
               <li><Link href="/disclaimer" className="text-sm text-gray-600 dark:text-gray-400 hover:text-indigo-600 dark:hover:text-indigo-400 transition-colors">Affiliate Disclaimer</Link></li>
+              <li><a href="/feed.xml" className="text-sm text-gray-600 dark:text-gray-400 hover:text-indigo-600 dark:hover:text-indigo-400 transition-colors">RSS Feed</a></li>
             </ul>
           </div>
         </div>

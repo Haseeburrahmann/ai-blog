@@ -58,9 +58,26 @@ export const AFFILIATE_PARTNERS: AffiliatePartner[] = [
   },
 ];
 
+// Maps blog/tool category slugs to affiliate category labels
+const CATEGORY_MAP: Record<string, string> = {
+  'ai-writing': 'Writing',
+  'ai-marketing': 'Marketing',
+  'ai-productivity': 'Productivity',
+  'ai-finance': 'Productivity',
+  'ai-legal': 'Writing',
+  'ai-development': 'Productivity',
+  'tutorials': 'Writing',
+  'tool-reviews': 'Writing',
+  'writing': 'Writing',
+  'seo': 'Marketing',
+  'developer': 'Productivity',
+  'utility': 'Productivity',
+};
+
 export function getAffiliatesByCategory(category: string): AffiliatePartner[] {
+  const mapped = CATEGORY_MAP[category] || category;
   return AFFILIATE_PARTNERS.filter(
-    (a) => a.category.toLowerCase() === category.toLowerCase()
+    (a) => a.category.toLowerCase() === mapped.toLowerCase()
   );
 }
 

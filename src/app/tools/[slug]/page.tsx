@@ -385,7 +385,7 @@ export default async function ToolPage({ params }: Props) {
               </div>
 
               {/* Affiliate Recommendations */}
-              <RecommendedTools limit={3} />
+              <RecommendedTools limit={3} category={t.category} />
             </div>
           </aside>
         </div>
